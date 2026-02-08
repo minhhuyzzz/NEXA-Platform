@@ -90,10 +90,10 @@ const Login = () => {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-sm text-slate-500">
-              Chưa có tài khoản? <a href="#" className="text-blue-600 font-bold hover:underline">Đăng ký tổ chức</a>
-            </p>
-          </div>
+               <p className="text-sm text-slate-500">
+               Chưa có tài khoản? <button onClick={() => navigate('/register')} className="text-blue-600 font-bold hover:underline">Đăng ký tổ chức</button>
+               </p>
+           </div>
         </div>
       </div>
     </div>
