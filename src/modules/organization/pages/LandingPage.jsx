@@ -69,10 +69,10 @@ const LOGO_URL = "https://i.postimg.cc/Vv0HrbfK/ảnh_logo_nexa.png";
 
 const LandingPage = () => {
     const navigate = useNavigate(); // PHẢI CÓ DÒNG NÀY
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('business');
+  const [isScrolled, setIsScrolled] = useState("false");
+  const [isLoggedIn, setIsLoggedIn] = useState("false");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState("false");
+  const [activeTab, setActiveTab] = useState("business");
 
   useEffect(() => {
     const handleScroll = () => {
