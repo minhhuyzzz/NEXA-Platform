@@ -68,7 +68,9 @@ const Icons = {
 const LOGO_URL = "https://i.postimg.cc/Vv0HrbfK/ảnh_logo_nexa.png";
 
 const LandingPage = () => {
+    const navigate = useNavigate(); // PHẢI CÓ DÒNG NÀY
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('business');
 
@@ -147,7 +149,8 @@ const LandingPage = () => {
                 <Icons.Login className="w-4 h-4" />
                 Đăng nhập
               </button>
-              <button onClick={handleStart} className="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-0.5">
+              <button onClick={handleStart} 
+              className="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-0.5">
                 Bắt đầu ngay
               </button>
               
