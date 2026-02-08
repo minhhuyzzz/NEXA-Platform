@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'; // BẮT BUỘC PHẢI CÓ
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import './assets/global.css'; // Đã sửa đường dẫn để fix lỗi build
 import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import './assets/global.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
