@@ -2,7 +2,6 @@ import React from 'react'; // BẮT BUỘC PHẢI CÓ
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import './assets/global.css';
 import './index.css';
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
