@@ -112,6 +112,28 @@ const Icons = {
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
     </svg>
   ),
+  Building: (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
+      <path d="M9 22v-4h6v4"/>
+      <path d="M8 6h.01"/>
+      <path d="M16 6h.01"/>
+      <path d="M12 6h.01"/>
+      <path d="M12 10h.01"/>
+      <path d="M12 14h.01"/>
+      <path d="M16 10h.01"/>
+      <path d="M16 14h.01"/>
+      <path d="M8 10h.01"/>
+      <path d="M8 14h.01"/>
+    </svg>
+  ),
+  UserCheck: (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <polyline points="16 11 18 13 22 9"/>
+    </svg>
+  ),
 };
 
 const LOGO_URL = "https://i.postimg.cc/Vv0HrbfK/ảnh_logo_nexa.png";
@@ -120,7 +142,7 @@ const LOGO_URL = "https://i.postimg.cc/Vv0HrbfK/ảnh_logo_nexa.png";
 const NexaLandingPage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('schools');
+  const [activeTab, setActiveTab] = useState('business');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -131,23 +153,21 @@ const NexaLandingPage = () => {
   }, []);
 
   const benefits = {
-    schools: [
-      { icon: <Icons.Brain className="w-5 h-5" />, text: "Đánh giá năng lực số toàn trường theo tiêu chuẩn DigComp 2.2" },
-      { icon: <Icons.TrendingUp className="w-5 h-5" />, text: "Dashboard thống kê & báo cáo chi tiết theo khoa/ngành" },
-      { icon: <Icons.Award className="w-5 h-5" />, text: "Cấp chứng chỉ số (Digital Badge) được công nhận quốc tế" },
-      { icon: <Icons.BookOpen className="w-5 h-5" />, text: "Tích hợp LMS & hệ thống quản lý sinh viên hiện có" }
-    ],
-    students: [
-      { icon: <Icons.Target className="w-5 h-5" />, text: "Test năng lực số miễn phí với AI phân tích chi tiết" },
-      { icon: <Icons.Zap className="w-5 h-5" />, text: "Lộ trình học tập cá nhân hóa dựa trên mục tiêu nghề nghiệp" },
-      { icon: <Icons.Award className="w-5 h-5" />, text: "Nhận chứng chỉ có giá trị khi xin việc" },
-      { icon: <Icons.Users className="w-5 h-5" />, text: "Kết nối cộng đồng học tập & mentor từ doanh nghiệp" }
+    business: [
+      { icon: <Icons.Brain className="w-5 h-5" />, text: "Đánh giá năng lực số toàn tổ chức (Trường học/Doanh nghiệp) theo DigComp 2.2" },
+      { icon: <Icons.TrendingUp className="w-5 h-5" />, text: "Dashboard thống kê & báo cáo chi tiết theo phòng ban/khoa" },
+      { icon: <Icons.Award className="w-5 h-5" />, text: "Cấp Digital Badge được công nhận quốc tế cho nhân viên/sinh viên" },
+      { icon: <Icons.BookOpen className="w-5 h-5" />, text: "Tích hợp LMS, HRIS & hệ thống quản lý hiện có" },
+      { icon: <Icons.Users className="w-5 h-5" />, text: "Lộ trình đào tạo tập thể cho từng đơn vị/bộ phận" },
+      { icon: <Icons.CheckCircle className="w-5 h-5" />, text: "API & White-label solution cho doanh nghiệp lớn" }
     ],
     community: [
-      { icon: <Icons.Globe className="w-5 h-5" />, text: "Tài nguyên học tập mở (OER) chất lượng cao" },
-      { icon: <Icons.Users className="w-5 h-5" />, text: "Diễn đàn trao đổi & chia sẻ kinh nghiệm" },
-      { icon: <Icons.BookOpen className="w-5 h-5" />, text: "Webinar & workshop hàng tuần từ chuyên gia" },
-      { icon: <Icons.Award className="w-5 h-5" />, text: "Chương trình học bổng & cơ hội việc làm" }
+      { icon: <Icons.Zap className="w-5 h-5" />, text: "Test năng lực số miễn phí với AI phân tích chi tiết" },
+      { icon: <Icons.Target className="w-5 h-5" />, text: "Lộ trình học tập cá nhân hóa theo mục tiêu nghề nghiệp" },
+      { icon: <Icons.Award className="w-5 h-5" />, text: "Nhận chứng chỉ số có giá trị khi xin việc & thăng tiến" },
+      { icon: <Icons.Globe className="w-5 h-5" />, text: "Tài nguyên học tập mở (OER) chất lượng cao miễn phí" },
+      { icon: <Icons.Users className="w-5 h-5" />, text: "Kết nối cộng đồng học tập & mentor từ doanh nghiệp" },
+      { icon: <Icons.BookOpen className="w-5 h-5" />, text: "Webinar & workshop hàng tuần từ chuyên gia hàng đầu" }
     ]
   };
 
@@ -250,7 +270,7 @@ const NexaLandingPage = () => {
           
           {/* Subheadline */}
           <p className="text-lg md:text-xl text-slate-600 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
-            Hệ sinh thái toàn diện dựa trên AI & DigComp 2.2, giúp <span className="text-blue-600 font-bold">Trường học</span>, <span className="text-blue-600 font-bold">Sinh viên</span> và <span className="text-blue-600 font-bold">Cộng đồng</span> phát triển năng lực số bền vững
+            Hệ sinh thái toàn diện dựa trên AI & DigComp 2.2, giúp <span className="text-blue-600 font-bold">Doanh nghiệp</span>, <span className="text-blue-600 font-bold">Trường học</span> và <span className="text-blue-600 font-bold">Cá nhân</span> phát triển năng lực số bền vững
           </p>
 
           {/* CTA Buttons */}
@@ -273,7 +293,7 @@ const NexaLandingPage = () => {
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-black text-blue-600 mb-2">120+</div>
-              <div className="text-slate-600 font-semibold text-xs md:text-sm">Trường ĐH</div>
+              <div className="text-slate-600 font-semibold text-xs md:text-sm">Tổ chức</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-black text-blue-600 mb-2">98%</div>
@@ -293,37 +313,45 @@ const NexaLandingPage = () => {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Giải pháp cho mọi đối tượng</h2>
             <p className="text-slate-600 text-lg">
-              Hệ sinh thái NEXA được thiết kế riêng biệt để đáp ứng nhu cầu của từng nhóm người dùng
+              Hệ sinh thái NEXA phục vụ cả tổ chức (B2B) và cá nhân (B2C)
             </p>
           </div>
 
-          {/* Tabs */}
+          {/* Tabs - Only 2 tabs now */}
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             <button 
-              onClick={() => setActiveTab('schools')}
-              className={`px-8 py-4 rounded-2xl font-bold text-base transition-all duration-300 ${activeTab === 'schools' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-slate-600 border-2 border-slate-200 hover:border-blue-300'}`}
+              onClick={() => setActiveTab('business')}
+              className={`px-10 py-5 rounded-2xl font-bold text-base transition-all duration-300 flex items-center gap-3 ${
+                activeTab === 'business' 
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
+                  : 'bg-white text-slate-600 border-2 border-slate-200 hover:border-blue-300'
+              }`}
             >
-              <Icons.Award className="w-5 h-5 inline mr-2" />
-              Nhà trường
+              <Icons.Building className="w-6 h-6" />
+              <div className="text-left">
+                <div className="text-sm opacity-80">Dành cho</div>
+                <div className="text-lg font-black">Doanh nghiệp & Trường học</div>
+              </div>
             </button>
-            <button 
-              onClick={() => setActiveTab('students')}
-              className={`px-8 py-4 rounded-2xl font-bold text-base transition-all duration-300 ${activeTab === 'students' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-slate-600 border-2 border-slate-200 hover:border-blue-300'}`}
-            >
-              <Icons.Users className="w-5 h-5 inline mr-2" />
-              Sinh viên
-            </button>
+            
             <button 
               onClick={() => setActiveTab('community')}
-              className={`px-8 py-4 rounded-2xl font-bold text-base transition-all duration-300 ${activeTab === 'community' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-slate-600 border-2 border-slate-200 hover:border-blue-300'}`}
+              className={`px-10 py-5 rounded-2xl font-bold text-base transition-all duration-300 flex items-center gap-3 ${
+                activeTab === 'community' 
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
+                  : 'bg-white text-slate-600 border-2 border-slate-200 hover:border-blue-300'
+              }`}
             >
-              <Icons.Globe className="w-5 h-5 inline mr-2" />
-              Cộng đồng
+              <Icons.UserCheck className="w-6 h-6" />
+              <div className="text-left">
+                <div className="text-sm opacity-80">Dành cho</div>
+                <div className="text-lg font-black">Cá nhân & Cộng đồng</div>
+              </div>
             </button>
           </div>
 
           {/* Tab Content */}
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div className="grid md:grid-cols-2 gap-6">
               {benefits[activeTab].map((benefit, index) => (
                 <div key={index} className="flex items-start gap-4 p-6 rounded-2xl bg-white border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300">
@@ -406,7 +434,7 @@ const NexaLandingPage = () => {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Người dùng nói gì về NEXA</h2>
             <p className="text-slate-600 text-lg">
-              Hơn 15,000 người dùng và 120+ trường đại học tin tưởng
+              Hơn 15,000 người dùng và 120+ tổ chức tin tưởng
             </p>
           </div>
 
@@ -519,7 +547,7 @@ const NexaLandingPage = () => {
             Sẵn sàng nâng cao năng lực số?
           </h2>
           <p className="text-blue-100 text-xl mb-10 max-w-2xl mx-auto">
-            Tham gia cùng hàng nghìn sinh viên và hàng trăm trường đại học đang phát triển năng lực số với NEXA
+            Tham gia cùng hàng nghìn người và hàng trăm tổ chức đang phát triển năng lực số với NEXA
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button className="w-full sm:w-auto px-10 py-5 bg-white text-blue-600 text-lg font-bold rounded-full hover:bg-blue-50 transition shadow-2xl hover:shadow-white/50 transform hover:-translate-y-1 flex items-center justify-center gap-2">
@@ -538,7 +566,7 @@ const NexaLandingPage = () => {
       <footer className="bg-[#1a1e27] text-white py-12 md:py-16 lg:py-20">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 xl:gap-12 mb-12 lg:mb-16">
-            {/* Column 1: NEXA Branding */}
+            {/* Column 1 - Brand */}
             <div className="space-y-4 lg:max-w-xs">
               <div className="flex items-center gap-3">
                 <img src={LOGO_URL} alt="NEXA Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-lg flex-shrink-0" />
@@ -549,7 +577,7 @@ const NexaLandingPage = () => {
               </p>
             </div>
 
-            {/* Column 2: Hệ sinh thái */}
+            {/* Column 2 - Hệ sinh thái */}
             <div>
               <h4 className="text-white font-bold mb-4 md:mb-6 text-sm md:text-base">Hệ sinh thái</h4>
               <ul className="space-y-2.5 md:space-y-3 text-sm text-slate-300">
@@ -560,7 +588,7 @@ const NexaLandingPage = () => {
               </ul>
             </div>
 
-            {/* Column 3: Hỗ trợ & Pháp lý */}
+            {/* Column 3 - Hỗ trợ & Pháp lý */}
             <div>
               <h4 className="text-white font-bold mb-4 md:mb-6 text-sm md:text-base">Hỗ trợ & Pháp lý</h4>
               <ul className="space-y-2.5 md:space-y-3 text-sm text-slate-300">
@@ -571,7 +599,7 @@ const NexaLandingPage = () => {
               </ul>
             </div>
 
-            {/* Column 4: Liên hệ */}
+            {/* Column 4 - Liên hệ */}
             <div>
               <h4 className="text-white font-bold mb-4 md:mb-6 text-sm md:text-base">Liên hệ</h4>
               <ul className="space-y-3 md:space-y-4 text-sm text-slate-300">
