@@ -410,16 +410,16 @@ const LandingPage = () => {
               
               <div className="grid grid-cols-3 gap-4 mb-8">
                 <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/15 transition cursor-default text-center">
-                  <div className="text-4xl font-black text-white mb-2">4</div>
-                  <div className="text-xs text-slate-300 uppercase tracking-wide font-bold">Giáo dục</div>
+                  <div className="text-4xl font-black text-white mb-2">SDG 4</div>
+                  <div className="text-xs text-slate-300 uppercase tracking-wide font-bold">Giáo dục chất lượng</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/15 transition cursor-default text-center">
-                  <div className="text-4xl font-black text-white mb-2">8</div>
-                  <div className="text-xs text-slate-300 uppercase tracking-wide font-bold">Việc làm</div>
+                  <div className="text-4xl font-black text-white mb-2">SDG 8</div>
+                  <div className="text-xs text-slate-300 uppercase tracking-wide font-bold">Việc làm bền vững</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/15 transition cursor-default text-center">
-                  <div className="text-4xl font-black text-white mb-2">10</div>
-                  <div className="text-xs text-slate-300 uppercase tracking-wide font-bold">Bình đẳng</div>
+                  <div className="text-4xl font-black text-white mb-2">SDG 10</div>
+                  <div className="text-xs text-slate-300 uppercase tracking-wide font-bold">Giảm bất bình đẳng</div>
                 </div>
               </div>
 
