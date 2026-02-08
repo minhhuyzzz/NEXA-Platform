@@ -564,4 +564,3 @@ const NexaLandingPage = () => {
 };
 
 export default NexaLandingPage;
-}
