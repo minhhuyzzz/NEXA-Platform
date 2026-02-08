@@ -7,10 +7,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  // Thêm phần này để đảm bảo Vite tìm thấy các file trong thư mục modules
-  resolve: {
-    alias: {
-      '@': '/src',
+  server: {
+    watch: {
+      usePolling: true,
     },
   },
 })
