@@ -2,15 +2,20 @@ import React from 'react';
 import { 
   LayoutDashboard, Users, Leaf, Zap, 
   Settings, LogOut, Bell, Search, Award, 
-  ArrowUpRight, MoreHorizontal, Filter
+  ArrowUpRight, Filter
 } from 'lucide-react';
+// Import thư viện biểu đồ
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer 
+} from 'recharts';
 
 const colors = {
   primary: '#0EA5E9',       
   primaryLight: '#E0F2FE',  
   success: '#10B981',       
   successLight: '#D1FAE5',
-  warning: '#F59E0B',      
+  warning: '#F59E0B',       
   warningLight: '#FEF3C7',
   textMain: '#0F172A',
   textSub: '#64748B',
@@ -19,11 +24,21 @@ const colors = {
   border: '#E2E8F0'
 };
 
+// Dữ liệu mẫu cho biểu đồ xu hướng
+const chartData = [
+  { month: 'T09', score: 400 },
+  { month: 'T10', score: 600 },
+  { month: 'T11', score: 550 },
+  { month: 'T12', score: 800 },
+  { month: 'T01', score: 750 },
+  { month: 'T02', score: 920 },
+];
+
 const OrgDashboard = () => {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.bg, fontFamily: "'Inter', sans-serif" }}>
       
-      {/* 1. SIDEBAR (Giữ nguyên nhưng gọn hơn) */}
+      {/* 1. SIDEBAR */}
       <aside style={{ width: '250px', backgroundColor: colors.white, borderRight: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 10 }}>
         <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '32px', height: '32px', background: `linear-gradient(135deg, ${colors.primary}, #2563EB)`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>N</div>
@@ -63,7 +78,7 @@ const OrgDashboard = () => {
           </div>
         </header>
 
-        {/* Stats Row (Nhỏ gọn, chuyên nghiệp hơn) */}
+        {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
           <StatCard title="Tổng Nhân sự" value="1,240" trend="+12%" icon={<Users size={20} color="white"/>} bg={colors.primary} />
           <StatCard title="Điểm Số Hóa" value="850" trend="+5.4%" icon={<Zap size={20} color="white"/>} bg="#6366F1" />
@@ -71,27 +86,53 @@ const OrgDashboard = () => {
           <StatCard title="Chứng chỉ cấp" value="342" trend="+22%" icon={<Award size={20} color="white"/>} bg={colors.warning} />
         </div>
 
-        {/* Content Grid: Biểu đồ + Danh sách (Layout Website) */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
           
-          {/* Cột Trái: Biểu đồ & Phân tích */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {/* Chart Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', border: `1px solid ${colors.border}`, padding: '20px', minHeight: '350px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <h3 style={{ fontWeight: '600', color: colors.textMain }}>Xu hướng Năng lực Số</h3>
-                <button style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '5px', border: `1px solid ${colors.border}`, padding: '5px 10px', borderRadius: '6px', background: 'white', cursor: 'pointer' }}>
-                  <Filter size={14} /> Lọc theo tháng
-                </button>
-              </div>
-              {/* Placeholder Biểu đồ */}
-              <div style={{ height: '250px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '2px dashed #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textSub }}>
-                [Khu vực hiển thị Biểu đồ Đường/Cột]
-              </div>
+          {/* Cột Trái: Biểu đồ thực tế */}
+          <div style={{ backgroundColor: 'white', borderRadius: '12px', border: `1px solid ${colors.border}`, padding: '20px', minHeight: '400px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
+              <h3 style={{ fontWeight: '600', color: colors.textMain }}>Xu hướng Năng lực Số</h3>
+              <button style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '5px', border: `1px solid ${colors.border}`, padding: '5px 10px', borderRadius: '6px', background: 'white', cursor: 'pointer' }}>
+                <Filter size={14} /> Lọc theo tháng
+              </button>
+            </div>
+            
+            {/* Tích hợp biểu đồ mượt mà */}
+            <div style={{ height: '300px', width: '100%' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={colors.primary} stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor={colors.primary} stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="month" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{fill: colors.textSub, fontSize: 12}}
+                    dy={10}
+                  />
+                  <YAxis hide />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="score" 
+                    stroke={colors.primary} 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorScore)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Cột Phải: Danh sách xếp hạng (Table nhỏ) */}
+          {/* Cột Phải: Danh sách xếp hạng */}
           <div style={{ backgroundColor: 'white', borderRadius: '12px', border: `1px solid ${colors.border}`, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
               <h3 style={{ fontWeight: '600', color: colors.textMain }}>Top Học viên Xuất sắc</h3>
@@ -123,7 +164,7 @@ const OrgDashboard = () => {
   );
 };
 
-/* --- Sub-Components (Gọn gàng) --- */
+/* --- Sub-Components (Dùng Tailwind logic hoặc Inline styles như bạn yêu cầu) --- */
 
 const MenuItem = ({ icon, label, active, color }) => (
   <div style={{ 
@@ -153,7 +194,7 @@ const StatCard = ({ title, value, trend, icon, bg }) => (
 const UserRow = ({ name, dept, score }) => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid #F1F5F9' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+      <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: colors.primaryLight, color: colors.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
         {name.charAt(0)}
       </div>
       <div>
