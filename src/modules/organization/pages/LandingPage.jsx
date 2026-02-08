@@ -79,7 +79,9 @@ const LandingPage = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
+  const handleStart = () => {
+    navigate('/admin'); // Lệnh này sẽ mở trang Dashboard
+  };
   const benefits = {
     business: [
       { icon: <Icons.Brain className="w-5 h-5" />, text: "Đánh giá năng lực số toàn tổ chức (Trường học/Doanh nghiệp) theo DigComp 2.2" },
@@ -145,7 +147,7 @@ const LandingPage = () => {
                 <Icons.Login className="w-4 h-4" />
                 Đăng nhập
               </button>
-              <button onClick={() => window.location.href='/org/dashboard'} className="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-0.5">
+              <button onClick={handleStart} className="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-0.5">
                 Bắt đầu ngay
               </button>
               
@@ -203,7 +205,7 @@ const LandingPage = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <button className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white text-base font-bold rounded-full hover:bg-blue-700 transition shadow-xl shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+            <button onClick={handleStart} className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white text-base font-bold rounded-full hover:bg-blue-700 transition shadow-xl shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
               <Icons.Zap className="w-5 h-5" />
               Test năng lực miễn phí
             </button>
