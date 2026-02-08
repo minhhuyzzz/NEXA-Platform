@@ -82,7 +82,7 @@ const LandingPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   const handleStart = () => {
-    navigate('/admin'); // Lệnh này sẽ mở trang Dashboard
+    navigate('/login'); // Lệnh này sẽ mở trang Dashboard
   };
   const benefits = {
     business: [

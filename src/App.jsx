@@ -13,6 +13,9 @@ function App() {
       
       {/* Trang quản trị chỉ hiện khi gõ đúng link /admin */}
       <Route path="/admin" element={<OrgDashboard />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} /> {/* THÊM DÒNG NÀY */}
+      <Route path="/admin" element={<OrgDashboard />} />
     </Routes>
   );
 }
