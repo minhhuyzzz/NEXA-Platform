@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import OrgSidebar from '../components/OrgSidebar'; // Menu bên trái
+// Import Sidebar
+import OrgSidebar from '../components/OrgSidebar'; 
 import { 
   Search, Download, MoreVertical, 
   CheckCircle2, XCircle, Clock
 } from 'lucide-react';
 
 const OrgUsers = () => {
-  // Dữ liệu mẫu (Không có biểu đồ nào ở đây cả)
+  // Dữ liệu mẫu cho bảng nhân sự
   const [users, setUsers] = useState([
     { id: 1, name: 'Nguyễn Thị B', code: 'SV-2024001', email: 'b.nguyen@edu.vn', role: 'student', score: 850, status: 'completed' },
     { id: 2, name: 'Lê Văn C', code: 'GV-005', email: 'c.le@techcorp.com', role: 'staff', score: 920, status: 'active' },
   ]);
 
-  // Lấy dữ liệu người dùng vừa đăng ký
+  // Lấy dữ liệu người dùng mới từ LocalStorage
   useEffect(() => {
     try {
       const savedUser = JSON.parse(localStorage.getItem('nexa_user') || 'null');
@@ -54,7 +55,7 @@ const OrgUsers = () => {
           </div>
         </header>
 
-        {/* Bảng Dữ liệu */}
+        {/* Bảng Dữ liệu (Không có biểu đồ) */}
         <div className="flex-1 overflow-y-auto p-8">
           <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
             <table className="w-full text-left border-collapse">
