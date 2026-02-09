@@ -1,14 +1,16 @@
 import React from 'react';
 import { 
-  LayoutDashboard, Users, Leaf, Zap, 
-  Settings, LogOut, Bell, Search, Award, 
-  ArrowUpRight, Filter
+  Users, Zap, Leaf, Award, 
+  Search, Bell, Filter, ArrowUpRight 
 } from 'lucide-react';
 // Import thư viện biểu đồ
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer 
 } from 'recharts';
+
+// 1. IMPORT SIDEBAR CHÍNH CHỦ (ĐỂ MENU HOẠT ĐỘNG)
+import OrgSidebar from '../components/OrgSidebar'; 
 
 const colors = {
   primary: '#0EA5E9',       
@@ -24,7 +26,6 @@ const colors = {
   border: '#E2E8F0'
 };
 
-// Dữ liệu mẫu cho biểu đồ xu hướng
 const chartData = [
   { month: 'T09', score: 400 },
   { month: 'T10', score: 600 },
@@ -36,175 +37,158 @@ const chartData = [
 
 const OrgDashboard = () => {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: colors.bg, fontFamily: "'Inter', sans-serif" }}>
+    // Sử dụng Flex container chuẩn Tailwind giống trang Users để đồng bộ layout
+    <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-900 overflow-hidden">
       
-      {/* 1. SIDEBAR */}
-      <aside style={{ width: '250px', backgroundColor: colors.white, borderRight: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', zIndex: 10 }}>
-        <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '32px', height: '32px', background: `linear-gradient(135deg, ${colors.primary}, #2563EB)`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>N</div>
-          <span style={{ fontSize: '18px', fontWeight: 'bold', color: colors.textMain }}>NEXA Admin</span>
-        </div>
+      {/* 2. THAY THẾ ASIDE CŨ BẰNG COMPONENT NÀY */}
+      <OrgSidebar />
 
-        <nav style={{ flex: 1, padding: '0 12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <MenuItem icon={<LayoutDashboard size={18} />} label="Tổng quan" active />
-          <MenuItem icon={<Users size={18} />} label="Quản lý Nhân sự" />
-          <MenuItem icon={<Leaf size={18} />} label="Báo cáo ESG" />
-          <MenuItem icon={<Award size={18} />} label="Chứng chỉ & NFT" />
-          <div style={{ height: '1px', backgroundColor: colors.border, margin: '10px 0' }}></div>
-          <MenuItem icon={<Settings size={18} />} label="Cài đặt hệ thống" />
-        </nav>
-
-        <div style={{ padding: '20px', borderTop: `1px solid ${colors.border}` }}>
-          <MenuItem icon={<LogOut size={18} />} label="Đăng xuất" color="#EF4444" />
-        </div>
-      </aside>
-
-      {/* 2. MAIN CONTENT */}
-      <main style={{ marginLeft: '250px', flex: 1, padding: '30px' }}>
+      {/* 3. NỘI DUNG CHÍNH */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
         
         {/* Header Bar */}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <header className="px-8 py-6 border-b border-slate-100 bg-white flex justify-between items-center shrink-0">
           <div>
-            <h1 style={{ fontSize: '24px', fontWeight: '700', color: colors.textMain }}>Tổng quan Tổ chức</h1>
-            <p style={{ color: colors.textSub, fontSize: '14px' }}>Cập nhật lần cuối: Hôm nay, 12:45 PM</p>
+            <h1 className="text-2xl font-[1000] tracking-tight uppercase text-[#0F172A]">Tổng quan Tổ chức</h1>
+            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mt-1">Cập nhật lần cuối: Hôm nay, 12:45 PM</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={18} color={colors.textSub} style={{ position: 'absolute', left: '10px', top: '10px' }} />
-              <input type="text" placeholder="Tìm kiếm..." style={{ padding: '10px 10px 10px 35px', borderRadius: '8px', border: `1px solid ${colors.border}`, outline: 'none', width: '250px' }} />
+          <div className="flex items-center gap-4">
+            <div className="relative hidden md:block">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input type="text" placeholder="Tìm kiếm..." className="pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none font-bold text-sm w-64" />
             </div>
-            <button style={{ padding: '10px', borderRadius: '8px', border: `1px solid ${colors.border}`, backgroundColor: 'white', cursor: 'pointer' }}><Bell size={18} color={colors.textSub} /></button>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: colors.primary, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>AD</div>
+            <button className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-[#3b66f5] hover:bg-blue-50 transition-all relative">
+              <Bell size={20} />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="w-10 h-10 rounded-xl bg-[#1e3a8a] flex items-center justify-center text-white font-[1000] shadow-lg shadow-blue-900/20">AD</div>
           </div>
         </header>
 
-        {/* Stats Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
-          <StatCard title="Tổng Nhân sự" value="1,240" trend="+12%" icon={<Users size={20} color="white"/>} bg={colors.primary} />
-          <StatCard title="Điểm Số Hóa" value="850" trend="+5.4%" icon={<Zap size={20} color="white"/>} bg="#6366F1" />
-          <StatCard title="Giảm thải CO2" value="12.5 Tấn" trend="+8%" icon={<Leaf size={20} color="white"/>} bg={colors.success} />
-          <StatCard title="Chứng chỉ cấp" value="342" trend="+22%" icon={<Award size={20} color="white"/>} bg={colors.warning} />
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
-          
-          {/* Cột Trái: Biểu đồ thực tế */}
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', border: `1px solid ${colors.border}`, padding: '20px', minHeight: '400px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-              <h3 style={{ fontWeight: '600', color: colors.textMain }}>Xu hướng Năng lực Số</h3>
-              <button style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '5px', border: `1px solid ${colors.border}`, padding: '5px 10px', borderRadius: '6px', background: 'white', cursor: 'pointer' }}>
-                <Filter size={14} /> Lọc theo tháng
-              </button>
-            </div>
+        {/* Nội dung cuộn được */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto space-y-8">
             
-            {/* Tích hợp biểu đồ mượt mà */}
-            <div style={{ height: '300px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={colors.primary} stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor={colors.primary} stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis 
-                    dataKey="month" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fill: colors.textSub, fontSize: 12}}
-                    dy={10}
-                  />
-                  <YAxis hide />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="score" 
-                    stroke={colors.primary} 
-                    strokeWidth={3}
-                    fillOpacity={1} 
-                    fill="url(#colorScore)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Cột Phải: Danh sách xếp hạng */}
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', border: `1px solid ${colors.border}`, padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: '600', color: colors.textMain }}>Top Học viên Xuất sắc</h3>
-              <a href="#" style={{ fontSize: '13px', color: colors.primary, fontWeight: '500' }}>Xem tất cả</a>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <UserRow name="Nguyễn Văn A" dept="Marketing" score="980" />
-              <UserRow name="Trần Thị B" dept="Kế toán" score="945" />
-              <UserRow name="Lê Hoàng C" dept="IT Dev" score="910" />
-              <UserRow name="Phạm Minh D" dept="HR" score="890" />
-              <UserRow name="Hoàng Anh E" dept="Sales" score="885" />
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+              <StatCard title="Tổng Nhân sự" value="1,240" trend="+12%" icon={<Users size={20} color="white"/>} bg={colors.primary} />
+              <StatCard title="Điểm Số Hóa" value="850" trend="+5.4%" icon={<Zap size={20} color="white"/>} bg="#6366F1" />
+              <StatCard title="Giảm thải CO2" value="12.5 Tấn" trend="+8%" icon={<Leaf size={20} color="white"/>} bg={colors.success} />
+              <StatCard title="Chứng chỉ cấp" value="342" trend="+22%" icon={<Award size={20} color="white"/>} bg={colors.warning} />
             </div>
 
-            <div style={{ marginTop: '20px', padding: '15px', backgroundColor: colors.successLight, borderRadius: '8px' }}>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '5px' }}>
-                <Leaf size={16} color={colors.success} />
-                <span style={{ fontWeight: '600', color: '#065F46', fontSize: '14px' }}>Mẹo ESG</span>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              {/* Cột Trái: Biểu đồ thực tế */}
+              <div className="lg:col-span-2 bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-sm font-[1000] uppercase tracking-wider text-slate-800">Xu hướng Năng lực Số</h3>
+                  <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl text-[10px] font-bold uppercase hover:bg-slate-100 border border-slate-100">
+                    <Filter size={14} /> Lọc theo tháng
+                  </button>
+                </div>
+                
+                <div style={{ height: '300px', width: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={colors.primary} stopOpacity={0.2}/>
+                          <stop offset="95%" stopColor={colors.primary} stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis 
+                        dataKey="month" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{fill: colors.textSub, fontSize: 12, fontWeight: 'bold'}}
+                        dy={10}
+                      />
+                      <YAxis hide />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 'bold' }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="score" 
+                        stroke={colors.primary} 
+                        strokeWidth={3}
+                        fillOpacity={1} 
+                        fill="url(#colorScore)" 
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-              <p style={{ fontSize: '12px', color: '#064E3B', lineHeight: '1.4' }}>
-                Phòng Marketing đang dẫn đầu về giảm thiểu giấy in. Hãy khen thưởng để khích lệ!
-              </p>
+
+              {/* Cột Phải: Danh sách xếp hạng */}
+              <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-sm font-[1000] uppercase tracking-wider text-slate-800">Top Học viên Xuất sắc</h3>
+                  <button className="text-[10px] font-bold text-blue-600 hover:underline">Xem tất cả</button>
+                </div>
+                
+                <div className="space-y-4">
+                  <UserRow name="Nguyễn Văn A" dept="Marketing" score="980" />
+                  <UserRow name="Trần Thị B" dept="Kế toán" score="945" />
+                  <UserRow name="Lê Hoàng C" dept="IT Dev" score="910" />
+                  <UserRow name="Phạm Minh D" dept="HR" score="890" />
+                  <UserRow name="Hoàng Anh E" dept="Sales" score="885" />
+                </div>
+
+                <div className="mt-6 p-4 bg-green-50 rounded-2xl border border-green-100">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Leaf size={14} className="text-green-600" />
+                    <span className="text-[10px] font-[1000] text-green-700 uppercase">Mẹo ESG</span>
+                  </div>
+                  <p className="text-[10px] font-medium text-green-800 leading-relaxed">
+                    Phòng Marketing đang dẫn đầu về giảm thiểu giấy in. Hãy khen thưởng để khích lệ!
+                  </p>
+                </div>
+              </div>
+
             </div>
           </div>
-
         </div>
       </main>
     </div>
   );
 };
 
-/* --- Sub-Components (Dùng Tailwind logic hoặc Inline styles như bạn yêu cầu) --- */
-
-const MenuItem = ({ icon, label, active, color }) => (
-  <div style={{ 
-    display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', 
-    borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s',
-    backgroundColor: active ? colors.primaryLight : 'transparent',
-    color: color || (active ? colors.primary : colors.textSub)
-  }}>
-    {icon}
-    <span style={{ fontSize: '14px', fontWeight: active ? '600' : '500' }}>{label}</span>
-  </div>
-);
+/* --- Sub-Components (Đã chuyển sang Tailwind cho đồng bộ) --- */
 
 const StatCard = ({ title, value, trend, icon, bg }) => (
-  <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '5px' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-      <div style={{ padding: '8px', borderRadius: '8px', backgroundColor: bg, display: 'flex' }}>{icon}</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#10B981', fontWeight: '600', backgroundColor: '#ECFDF5', padding: '2px 6px', borderRadius: '4px' }}>
+  <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+    <div className="flex justify-between items-start mb-4">
+      <div style={{ backgroundColor: bg }} className="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm">
+        {icon}
+      </div>
+      <div className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg">
         <ArrowUpRight size={12} /> {trend}
       </div>
     </div>
-    <span style={{ fontSize: '24px', fontWeight: '700', color: colors.textMain, marginTop: '10px' }}>{value}</span>
-    <span style={{ fontSize: '13px', color: colors.textSub }}>{title}</span>
+    <div>
+      <h3 className="text-2xl font-[1000] text-slate-800 tracking-tight">{value}</h3>
+      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mt-1">{title}</p>
+    </div>
   </div>
 );
 
 const UserRow = ({ name, dept, score }) => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid #F1F5F9' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: colors.primaryLight, color: colors.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+  <div className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer border-b border-slate-50 last:border-0">
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-[1000] text-xs">
         {name.charAt(0)}
       </div>
       <div>
-        <p style={{ fontSize: '14px', fontWeight: '600', color: '#334155', margin: 0 }}>{name}</p>
-        <p style={{ fontSize: '12px', color: '#64748B', margin: 0 }}>{dept}</p>
+        <p className="text-xs font-[1000] text-slate-800">{name}</p>
+        <p className="text-[10px] text-slate-400 font-medium">{dept}</p>
       </div>
     </div>
-    <div style={{ textAlign: 'right' }}>
-      <span style={{ fontSize: '14px', fontWeight: 'bold', color: colors.primary }}>{score}</span>
-      <p style={{ fontSize: '10px', color: '#94A3B8', margin: 0 }}>điểm</p>
+    <div className="text-right">
+      <p className="text-xs font-[1000] text-blue-600">{score}</p>
+      <p className="text-[8px] text-slate-400 font-bold uppercase">điểm</p>
     </div>
   </div>
 );
