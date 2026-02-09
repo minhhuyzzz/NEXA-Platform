@@ -5,7 +5,7 @@ import OrgDashboard from './modules/organization/pages/Dashboard';
 import UserDashboard from './modules/user/pages/UserDashboard';
 import Login from './modules/auth/pages/Login'; 
 import Register from './modules/auth/pages/Register';
-import OrgUsers from './modules/organization/pages/StaffList';
+import StaffList from './modules/organization/pages/StaffList';
 function App() {
   return (
     <Routes>
