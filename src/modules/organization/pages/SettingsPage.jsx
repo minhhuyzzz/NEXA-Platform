@@ -78,9 +78,13 @@ const SettingsPage = () => {
           <SidebarItem icon={<Users size={20}/>} label="Quản lý Nhân sự" onClick={() => navigate('/admin/users')} />
           <SidebarItem icon={<FileBarChart size={20}/>} label="Báo cáo ESG" onClick={() => navigate('/admin/esg')} />
           <SidebarItem icon={<Award size={20}/>} label="Chứng chỉ & NFT" onClick={() => navigate('/admin/nft')} />
-          <SidebarItem icon={<Settings size={20}/>} label="Cài đặt hệ thống" onClick={() => navigate('/admin/settings')} />
+          <SidebarItem 
+  icon={<Settings size={20}/>} 
+  label="Cài đặt hệ thống" 
+  onClick={() => navigate('/admin/settings')} 
+/>
           <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
-          <SidebarItem active icon={<Settings size={20}/>} label="Cài đặt hệ thống" />
+          
         </nav>
         <div className="p-6 border-t border-slate-50">
           <button onClick={() => navigate('/login')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all">
