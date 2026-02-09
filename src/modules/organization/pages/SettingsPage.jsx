@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, FileBarChart, Award, 
-  Settings, LogOut, User, Lock, Bell, Globe, Moon, Save, ToggleRight
+  Settings, LogOut, User, Lock, Bell, Save, ToggleRight
 } from 'lucide-react';
 
 /* --- SUB-COMPONENTS --- */
@@ -74,17 +74,34 @@ const SettingsPage = () => {
           <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">Cài Đặt</span>
         </div>
         <nav className="flex-1 px-4 py-4 space-y-2">
-          <SidebarItem icon={<LayoutDashboard size={20}/>} label="Tổng quan" onClick={() => navigate('/admin')} />
-          <SidebarItem icon={<Users size={20}/>} label="Quản lý Nhân sự" onClick={() => navigate('/admin/users')} />
-          <SidebarItem icon={<FileBarChart size={20}/>} label="Báo cáo ESG" onClick={() => navigate('/admin/esg')} />
-          <SidebarItem icon={<Award size={20}/>} label="Chứng chỉ & NFT" onClick={() => navigate('/admin/nft')} />
           <SidebarItem 
-  icon={<Settings size={20}/>} 
-  label="Cài đặt hệ thống" 
-  onClick={() => navigate('/admin/settings')} 
-/>
-          <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
+            icon={<LayoutDashboard size={20}/>} 
+            label="Tổng quan" 
+            onClick={() => navigate('/admin')} 
+          />
+          <SidebarItem 
+            icon={<Users size={20}/>} 
+            label="Quản lý Nhân sự" 
+            onClick={() => navigate('/admin/users')} 
+          />
+          <SidebarItem 
+            icon={<FileBarChart size={20}/>} 
+            label="Báo cáo ESG" 
+            onClick={() => navigate('/admin/esg')} 
+          />
+          <SidebarItem 
+            icon={<Award size={20}/>} 
+            label="Chứng chỉ & NFT" 
+            onClick={() => navigate('/admin/nft')} 
+          />
+          <SidebarItem 
+            active 
+            icon={<Settings size={20}/>} 
+            label="Cài đặt hệ thống" 
+            // Đang ở trang này rồi nên không cần onClick
+          />
           
+          <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
         </nav>
         <div className="p-6 border-t border-slate-50">
           <button onClick={() => navigate('/login')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all">

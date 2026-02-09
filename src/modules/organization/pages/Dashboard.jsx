@@ -30,7 +30,7 @@ const chartData = [
 ];
 
 const OrgDashboard = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Đảm bảo đã import và khai báo đúng
   const location = useLocation();
 
   // Logic chào hỏi dựa trên tên bạn
@@ -48,10 +48,12 @@ const OrgDashboard = () => {
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-2">
-          <button onClick={() => navigate('/admin')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm bg-blue-50 text-[#3b66f5]">
+          {/* Nút Tổng quan - Active */}
+          <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm bg-blue-50 text-[#3b66f5]">
             <LayoutDashboard size={20}/> <span className="tracking-tight">Tổng quan</span>
           </button>
           
+          {/* Các nút khác - Có onClick chuyển trang */}
           <button onClick={() => navigate('/admin/users')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm text-slate-400 hover:bg-slate-50">
             <Users size={20}/> <span className="tracking-tight">Quản lý Nhân sự</span>
           </button>
@@ -66,7 +68,8 @@ const OrgDashboard = () => {
           
           <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
           
-          <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm text-slate-400 hover:bg-slate-50">
+          {/* Nút Cài đặt - Đã thêm onClick */}
+          <button onClick={() => navigate('/admin/settings')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm text-slate-400 hover:bg-slate-50">
             <Settings size={20}/> <span className="tracking-tight">Cài đặt hệ thống</span>
           </button>
         </nav>
