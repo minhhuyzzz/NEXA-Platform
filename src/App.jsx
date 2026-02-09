@@ -8,6 +8,7 @@ import Register from './modules/auth/pages/Register';
 import StaffList from './modules/organization/pages/StaffList';
 import ESGReport from './modules/organization/pages/ESGReport';
 import NFTPage from './modules/organization/pages/NFTPage';
+import SettingsPage from './modules/organization/pages/SettingsPage';
 function App() {
   return (
     <Routes>
@@ -19,6 +20,7 @@ function App() {
       <Route path="/admin/users" element={<StaffList />} />
       <Route path="/admin/esg" element={<ESGReport />} />
       <Route path="/admin/nft" element={<NFTPage />} />
+      <Route path="/admin/settings" element={<SettingsPage />} />
     </Routes>
   );
 }
