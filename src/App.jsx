@@ -6,6 +6,7 @@ import UserDashboard from './modules/user/pages/UserDashboard';
 import Login from './modules/auth/pages/Login'; 
 import Register from './modules/auth/pages/Register';
 import StaffList from './modules/organization/pages/StaffList';
+import ESGReport from './modules/organization/pages/ESGReport';
 function App() {
   return (
     <Routes>
@@ -15,6 +16,7 @@ function App() {
       <Route path="/admin" element={<OrgDashboard />} />
       <Route path="/user" element={<UserDashboard />} />
       <Route path="/admin/users" element={<StaffList />} />
+      <Route path="/admin/esg" element={<ESGReport />} />
     </Routes>
   );
 }
