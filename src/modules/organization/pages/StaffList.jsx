@@ -1,6 +1,6 @@
 import React from 'react';
 
-const OrgUsers = () => {
+const StaffList = () => {
   console.log("--> HELLO WORLD: OrgUsers is running!"); // Dòng này sẽ hiện trong Console nếu file chạy
 
   return (
@@ -24,4 +24,4 @@ const OrgUsers = () => {
   );
 };
 
-export default OrgUsers;
+export default StaffList;

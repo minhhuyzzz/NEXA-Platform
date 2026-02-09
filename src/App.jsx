@@ -5,7 +5,7 @@ import OrgDashboard from './modules/organization/pages/Dashboard';
 import UserDashboard from './modules/user/pages/UserDashboard';
 import Login from './modules/auth/pages/Login'; 
 import Register from './modules/auth/pages/Register';
-
+import OrgUsers from './modules/organization/pages/StaffList';
 function App() {
   return (
     <Routes>
@@ -14,6 +14,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/admin" element={<OrgDashboard />} />
       <Route path="/user" element={<UserDashboard />} />
+      <Route path="/admin/users" element={<StaffList />} />
     </Routes>
   );
 }
