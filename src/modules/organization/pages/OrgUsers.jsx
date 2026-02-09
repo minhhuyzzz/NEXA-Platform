@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+// Import ĐẦY ĐỦ các icon để tránh lỗi crash
 import { 
   LayoutDashboard, Users, FileBarChart, Award, 
   Settings, LogOut, Search, Download, Filter, 
   CheckCircle2, Clock, MoreVertical, ShieldCheck, UserCheck, Plus 
 } from 'lucide-react';
 
-/* --- 1. ĐỊNH NGHĨA CÁC COMPONENT CON TRƯỚC (ĐỂ TRÁNH LỖI) --- */
+/* --- 1. KHAI BÁO COMPONENT CON Ở ĐẦU (AN TOÀN TUYỆT ĐỐI) --- */
 
 const MenuBtn = ({ icon, label, active, onClick }) => (
   <button onClick={onClick} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm ${active ? 'bg-blue-50 text-[#3b66f5]' : 'text-slate-400 hover:bg-slate-50'}`}>
@@ -15,7 +16,7 @@ const MenuBtn = ({ icon, label, active, onClick }) => (
 );
 
 const KPICard = ({ title, value, icon, bg }) => (
-  <div className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm flex items-center gap-4">
+  <div className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg}`}>{icon}</div>
     <div>
       <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{title}</h4>
@@ -25,23 +26,27 @@ const KPICard = ({ title, value, icon, bg }) => (
 );
 
 const StatusBadge = ({ status }) => {
+  // Định nghĩa style an toàn, tránh lỗi crash nếu status lạ
   const styles = { 
     completed: 'bg-green-50 text-green-600 border-green-100', 
     active: 'bg-blue-50 text-blue-600 border-blue-100', 
     pending: 'bg-orange-50 text-orange-600 border-orange-100' 
   };
   const labels = { completed: 'Đã cấp NFT', active: 'Đang học', pending: 'Chờ duyệt' };
+  
+  const currentStyle = styles[status] || styles.active;
+  const currentLabel = labels[status] || 'Active';
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full w-fit border ${styles[status] || styles.active}`}>
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full w-fit border border-transparent ${currentStyle}`}>
       {status === 'completed' ? <CheckCircle2 size={12} strokeWidth={3} /> : <UserCheck size={12} strokeWidth={3} />}
-      <span className="text-[9px] font-[1000] uppercase tracking-widest">{labels[status] || 'Active'}</span>
+      <span className="text-[9px] font-[1000] uppercase tracking-widest">{currentLabel}</span>
     </div>
   );
 };
 
 const FilterBtn = ({ label, active, onClick }) => (
-  <button onClick={onClick} className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${active ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>
+  <button onClick={onClick} className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${active ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>
     {label}
   </button>
 );
@@ -49,7 +54,8 @@ const FilterBtn = ({ label, active, onClick }) => (
 /* --- 2. COMPONENT CHÍNH --- */
 
 const OrgUsers = () => {
-  console.log("--> ORG USERS PAGE IS RENDERING..."); // Kiểm tra xem trang có chạy không
+  // LOG ĐỂ KIỂM TRA XEM TRANG CÓ CHẠY KHÔNG
+  console.log("--> OrgUsers Loaded Successfully");
 
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -74,11 +80,11 @@ const OrgUsers = () => {
           email: savedUser.email || 'admin@nexa.com',
           role: 'staff',
           status: 'active',
-          dept: 'Quản Trị'
+          dept: 'Ban Quản Trị'
         }, ...prev]);
       }
-    } catch (e) {
-      console.error("Lỗi đọc user:", e);
+    } catch (error) {
+      console.error("Lỗi localStorage:", error);
     }
   }, []);
 
@@ -95,7 +101,7 @@ const OrgUsers = () => {
       {/* SIDEBAR */}
       <aside className="w-72 bg-white border-r border-slate-100 flex flex-col h-screen shrink-0 z-20">
         <div className="p-8 flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#3b66f5] rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">N</div>
+          <div className="w-10 h-10 bg-[#3b66f5] rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-200">N</div>
           <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">NEXA Org</span>
         </div>
 
@@ -120,11 +126,13 @@ const OrgUsers = () => {
         <header className="px-8 py-6 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-10 flex justify-between items-center shrink-0">
           <div>
             <h1 className="text-2xl font-[1000] tracking-tight uppercase text-[#0F172A]">Hồ sơ Nhân sự</h1>
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mt-1">Danh sách thành viên</p>
+            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mt-1">Danh sách thành viên & Cấp phát</p>
           </div>
-          <button className="flex items-center gap-2 px-5 py-3 bg-[#3b66f5] text-white rounded-xl font-[1000] text-xs uppercase tracking-widest hover:bg-blue-600 shadow-lg shadow-blue-200 transition-all">
-            <Plus size={16} strokeWidth={3} /> Thêm mới
-          </button>
+          <div className="flex gap-3">
+            <button className="flex items-center gap-2 px-5 py-3 bg-[#3b66f5] text-white rounded-xl font-[1000] text-xs uppercase tracking-widest hover:bg-blue-600 shadow-lg shadow-blue-200 transition-all">
+              <Plus size={16} strokeWidth={3} /> Thêm mới
+            </button>
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
@@ -142,7 +150,7 @@ const OrgUsers = () => {
                 <input 
                   type="text" 
                   placeholder="Tìm kiếm..." 
-                  className="w-full pl-11 pr-4 py-3 bg-transparent outline-none font-bold text-sm text-slate-700"
+                  className="w-full pl-11 pr-4 py-3 bg-transparent outline-none font-bold text-sm text-slate-700 placeholder:text-slate-300"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
