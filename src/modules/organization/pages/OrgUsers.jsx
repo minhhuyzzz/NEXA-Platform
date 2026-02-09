@@ -6,12 +6,55 @@ import {
   CheckCircle2, Clock, MoreVertical, ShieldCheck, UserCheck, Plus 
 } from 'lucide-react';
 
+/* --- 1. ĐỊNH NGHĨA CÁC COMPONENT CON TRƯỚC (ĐỂ TRÁNH LỖI) --- */
+
+const MenuBtn = ({ icon, label, active, onClick }) => (
+  <button onClick={onClick} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm ${active ? 'bg-blue-50 text-[#3b66f5]' : 'text-slate-400 hover:bg-slate-50'}`}>
+    {icon} <span className="tracking-tight">{label}</span>
+  </button>
+);
+
+const KPICard = ({ title, value, icon, bg }) => (
+  <div className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm flex items-center gap-4">
+    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg}`}>{icon}</div>
+    <div>
+      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{title}</h4>
+      <p className="text-3xl font-[1000] text-slate-800 tracking-tighter">{value}</p>
+    </div>
+  </div>
+);
+
+const StatusBadge = ({ status }) => {
+  const styles = { 
+    completed: 'bg-green-50 text-green-600 border-green-100', 
+    active: 'bg-blue-50 text-blue-600 border-blue-100', 
+    pending: 'bg-orange-50 text-orange-600 border-orange-100' 
+  };
+  const labels = { completed: 'Đã cấp NFT', active: 'Đang học', pending: 'Chờ duyệt' };
+
+  return (
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full w-fit border ${styles[status] || styles.active}`}>
+      {status === 'completed' ? <CheckCircle2 size={12} strokeWidth={3} /> : <UserCheck size={12} strokeWidth={3} />}
+      <span className="text-[9px] font-[1000] uppercase tracking-widest">{labels[status] || 'Active'}</span>
+    </div>
+  );
+};
+
+const FilterBtn = ({ label, active, onClick }) => (
+  <button onClick={onClick} className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${active ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>
+    {label}
+  </button>
+);
+
+/* --- 2. COMPONENT CHÍNH --- */
+
 const OrgUsers = () => {
+  console.log("--> ORG USERS PAGE IS RENDERING..."); // Kiểm tra xem trang có chạy không
+
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
-  // DỮ LIỆU CỨNG (Tuyệt đối an toàn, không fetch API ảnh)
   const [users, setUsers] = useState([
     { id: 1, name: 'Nguyễn Thị Bích', code: 'SV-2024001', email: 'bich.nguyen@edu.vn', role: 'student', status: 'completed', dept: 'Kế toán' },
     { id: 2, name: 'Lê Văn Cường', code: 'GV-005', email: 'cuong.le@techcorp.com', role: 'staff', status: 'active', dept: 'IT Soft' },
@@ -27,15 +70,15 @@ const OrgUsers = () => {
         setUsers(prev => [{
           id: 999,
           name: savedUser.fullName,
-          code: savedUser.idCode || 'ADMIN-VIP',
+          code: 'ADMIN-VIP',
           email: savedUser.email || 'admin@nexa.com',
           role: 'staff',
           status: 'active',
-          dept: 'Ban Quản Trị'
+          dept: 'Quản Trị'
         }, ...prev]);
       }
     } catch (e) {
-      console.log("Lỗi đọc user", e);
+      console.error("Lỗi đọc user:", e);
     }
   }, []);
 
@@ -79,11 +122,9 @@ const OrgUsers = () => {
             <h1 className="text-2xl font-[1000] tracking-tight uppercase text-[#0F172A]">Hồ sơ Nhân sự</h1>
             <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mt-1">Danh sách thành viên</p>
           </div>
-          <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-5 py-3 bg-[#3b66f5] text-white rounded-xl font-[1000] text-xs uppercase tracking-widest hover:bg-blue-600 shadow-lg shadow-blue-200 transition-all">
-              <Plus size={16} strokeWidth={3} /> Thêm mới
-            </button>
-          </div>
+          <button className="flex items-center gap-2 px-5 py-3 bg-[#3b66f5] text-white rounded-xl font-[1000] text-xs uppercase tracking-widest hover:bg-blue-600 shadow-lg shadow-blue-200 transition-all">
+            <Plus size={16} strokeWidth={3} /> Thêm mới
+          </button>
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
@@ -106,6 +147,12 @@ const OrgUsers = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+              <div className="h-8 w-px bg-slate-100"></div>
+              <div className="flex gap-2 pr-2">
+                <FilterBtn label="Tất cả" active={filterStatus === 'all'} onClick={() => setFilterStatus('all')} />
+                <FilterBtn label="Đã cấp NFT" active={filterStatus === 'completed'} onClick={() => setFilterStatus('completed')} />
+                <FilterBtn label="Đang học" active={filterStatus === 'active'} onClick={() => setFilterStatus('active')} />
+              </div>
             </div>
 
             <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
@@ -124,7 +171,6 @@ const OrgUsers = () => {
                     <tr key={user.id} className="hover:bg-blue-50/20 transition-colors group">
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-4">
-                          {/* AVATAR DÙNG DIV CSS - KHÔNG DÙNG ẢNH */}
                           <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black shadow-md bg-gradient-to-br from-blue-500 to-indigo-600">
                             {user.name ? user.name.charAt(0) : 'U'}
                           </div>
@@ -149,33 +195,6 @@ const OrgUsers = () => {
           </div>
         </div>
       </main>
-    </div>
-  );
-};
-
-const MenuBtn = ({ icon, label, active, onClick }) => (
-  <button onClick={onClick} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm ${active ? 'bg-blue-50 text-[#3b66f5]' : 'text-slate-400 hover:bg-slate-50'}`}>
-    {icon} <span className="tracking-tight">{label}</span>
-  </button>
-);
-
-const KPICard = ({ title, value, icon, bg }) => (
-  <div className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm flex items-center gap-4">
-    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg}`}>{icon}</div>
-    <div>
-      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{title}</h4>
-      <p className="text-3xl font-[1000] text-slate-800 tracking-tighter">{value}</p>
-    </div>
-  </div>
-);
-
-const StatusBadge = ({ status }) => {
-  const styles = { completed: 'bg-green-50 text-green-600', active: 'bg-blue-50 text-blue-600', pending: 'bg-orange-50 text-orange-600' };
-  const labels = { completed: 'Đã cấp NFT', active: 'Đang học', pending: 'Chờ duyệt' };
-  return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full w-fit border border-transparent ${styles[status] || styles.active}`}>
-      {status === 'completed' ? <CheckCircle2 size={12} strokeWidth={3} /> : <UserCheck size={12} strokeWidth={3} />}
-      <span className="text-[9px] font-[1000] uppercase tracking-widest">{labels[status] || 'Active'}</span>
     </div>
   );
 };
