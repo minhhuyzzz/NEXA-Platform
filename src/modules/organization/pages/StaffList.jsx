@@ -58,12 +58,12 @@ const TableRowSkeleton = () => (
 const StaffList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true); // Trạng thái tải trang
+  const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
 
-  // Giả lập gọi API (Loading Effect) - Pro UX
+  // Giả lập gọi API (Loading Effect)
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setUsers([
         { id: 1, name: 'Nguyễn Thị Bích', code: 'SV-2024001', email: 'bich.nguyen@edu.vn', status: 'completed', dept: 'Kế toán' },
         { id: 2, name: 'Lê Văn Cường', code: 'GV-005', email: 'cuong.le@techcorp.com', status: 'active', dept: 'IT Soft' },
@@ -72,10 +72,11 @@ const StaffList = () => {
         { id: 5, name: 'Trần Thu Hà', code: 'SV-2024155', email: 'ha.tran@design.com', status: 'active', dept: 'Design' },
       ]);
       setIsLoading(false);
-    }, 800); // Delay 0.8s cho nó "thật"
+    }, 800);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Tối ưu bộ lọc với useMemo (Senior technique)
+  // Tối ưu bộ lọc
   const filteredUsers = useMemo(() => {
     return users.filter(user => 
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,10 +94,29 @@ const StaffList = () => {
           <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">NEXA Org</span>
         </div>
         <nav className="flex-1 px-4 py-4 space-y-2">
-          <SidebarItem icon={<LayoutDashboard size={20}/>} label="Tổng quan" onClick={() => navigate('/admin')} />
-          <SidebarItem active icon={<Users size={20}/>} label="Quản lý Nhân sự" />
-          <SidebarItem icon={<FileBarChart size={20}/>} label="Báo cáo ESG" />
-          <SidebarItem icon={<Award size={20}/>} label="Chứng chỉ & NFT" />
+          {/* CẬP NHẬT NAVIGATE TẠI ĐÂY */}
+          <SidebarItem 
+            icon={<LayoutDashboard size={20}/>} 
+            label="Tổng quan" 
+            onClick={() => navigate('/admin')} 
+          />
+          <SidebarItem 
+            active 
+            icon={<Users size={20}/>} 
+            label="Quản lý Nhân sự" 
+            // Trang hiện tại không cần onClick
+          />
+          <SidebarItem 
+            icon={<FileBarChart size={20}/>} 
+            label="Báo cáo ESG" 
+            onClick={() => navigate('/admin/esg')} 
+          />
+          <SidebarItem 
+            icon={<Award size={20}/>} 
+            label="Chứng chỉ & NFT" 
+            onClick={() => navigate('/admin/nft')} 
+          />
+          
           <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
           <SidebarItem icon={<Settings size={20}/>} label="Cài đặt hệ thống" />
         </nav>

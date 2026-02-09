@@ -83,10 +83,29 @@ const NFTPage = () => {
           <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">NEXA Cert</span>
         </div>
         <nav className="flex-1 px-4 py-4 space-y-2">
-          <SidebarItem icon={<LayoutDashboard size={20}/>} label="Tổng quan" onClick={() => navigate('/admin')} />
-          <SidebarItem icon={<Users size={20}/>} label="Quản lý Nhân sự" onClick={() => navigate('/admin/users')} />
-          <SidebarItem icon={<FileBarChart size={20}/>} label="Báo cáo ESG" onClick={() => navigate('/admin/esg')} />
-          <SidebarItem active icon={<Award size={20}/>} label="Chứng chỉ & NFT" />
+          {/* CẬP NHẬT NAVIGATE TẠI ĐÂY */}
+          <SidebarItem 
+            icon={<LayoutDashboard size={20}/>} 
+            label="Tổng quan" 
+            onClick={() => navigate('/admin')} 
+          />
+          <SidebarItem 
+            icon={<Users size={20}/>} 
+            label="Quản lý Nhân sự" 
+            onClick={() => navigate('/admin/users')} 
+          />
+          <SidebarItem 
+            icon={<FileBarChart size={20}/>} 
+            label="Báo cáo ESG" 
+            onClick={() => navigate('/admin/esg')} 
+          />
+          <SidebarItem 
+            active 
+            icon={<Award size={20}/>} 
+            label="Chứng chỉ & NFT" 
+            // Trang hiện tại không cần onClick
+          />
+          
           <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
           <SidebarItem icon={<Settings size={20}/>} label="Cài đặt hệ thống" />
         </nav>

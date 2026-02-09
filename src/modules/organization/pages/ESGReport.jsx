@@ -63,10 +63,29 @@ const ESGReport = () => {
           <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">NEXA ESG</span>
         </div>
         <nav className="flex-1 px-4 py-4 space-y-2">
-          <SidebarItem icon={<LayoutDashboard size={20}/>} label="Tổng quan" onClick={() => navigate('/admin')} />
-          <SidebarItem icon={<Users size={20}/>} label="Quản lý Nhân sự" onClick={() => navigate('/admin/users')} />
-          <SidebarItem active icon={<FileBarChart size={20}/>} label="Báo cáo ESG" />
-          <SidebarItem icon={<Award size={20}/>} label="Chứng chỉ & NFT" onClick={() => navigate('/admin/nft')} />
+          {/* SỬA LỖI NAVIGATE Ở ĐÂY */}
+          <SidebarItem 
+            icon={<LayoutDashboard size={20}/>} 
+            label="Tổng quan" 
+            onClick={() => navigate('/admin')} 
+          />
+          <SidebarItem 
+            icon={<Users size={20}/>} 
+            label="Quản lý Nhân sự" 
+            onClick={() => navigate('/admin/users')} 
+          />
+          <SidebarItem 
+            active 
+            icon={<FileBarChart size={20}/>} 
+            label="Báo cáo ESG" 
+            // Trang hiện tại không cần onClick
+          />
+          <SidebarItem 
+            icon={<Award size={20}/>} 
+            label="Chứng chỉ & NFT" 
+            onClick={() => navigate('/admin/nft')} 
+          />
+          
           <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
           <SidebarItem icon={<Settings size={20}/>} label="Cài đặt hệ thống" />
         </nav>
