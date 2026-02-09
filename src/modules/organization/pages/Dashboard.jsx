@@ -33,14 +33,14 @@ const OrgDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Logic chào hỏi (Không ảnh hưởng giao diện)
+  // Logic chào hỏi dựa trên tên bạn
   const savedUser = JSON.parse(localStorage.getItem('nexa_user') || '{}');
-  const adminName = savedUser.fullName || "Admin Nexa";
+  const adminName = savedUser.fullName || "Trần Minh Huy";
 
   return (
     <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-900 overflow-hidden text-left">
       
-      {/* 1. SIDEBAR: Đã thay thế Component OrgSidebar bằng code trực tiếp để fix lỗi Link */}
+      {/* 1. SIDEBAR (Gộp trực tiếp để tránh lỗi file components) */}
       <aside className="w-72 bg-white border-r border-slate-100 flex flex-col h-screen shrink-0">
         <div className="p-8 flex items-center gap-3">
           <div className="w-10 h-10 bg-[#3b66f5] rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">N</div>
@@ -48,12 +48,10 @@ const OrgDashboard = () => {
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-2">
-          {/* NÚT TỔNG QUAN (Active) */}
           <button onClick={() => navigate('/admin')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm bg-blue-50 text-[#3b66f5]">
             <LayoutDashboard size={20}/> <span className="tracking-tight">Tổng quan</span>
           </button>
           
-          {/* NÚT QUẢN LÝ NHÂN SỰ (Đã gắn Link chuẩn) */}
           <button onClick={() => navigate('/admin/users')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-bold text-sm text-slate-400 hover:bg-slate-50">
             <Users size={20}/> <span className="tracking-tight">Quản lý Nhân sự</span>
           </button>
@@ -80,13 +78,13 @@ const OrgDashboard = () => {
         </div>
       </aside>
 
-      {/* 2. NỘI DUNG CHÍNH (GIỮ NGUYÊN 100% GIAO DIỆN CỦA BẠN) */}
+      {/* 2. NỘI DUNG CHÍNH (GIAO DIỆN GỐC CỦA BẠN) */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
         
         <header className="px-8 py-6 border-b border-slate-100 bg-white flex justify-between items-center shrink-0">
           <div>
             <h1 className="text-2xl font-[1000] tracking-tight uppercase text-[#0F172A]">Tổng quan Tổ chức</h1>
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mt-1">Cập nhật lần cuối: Hôm nay, 12:45 PM</p>
+            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mt-1">Xin chào, {adminName}!</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="relative hidden md:block">
@@ -97,7 +95,7 @@ const OrgDashboard = () => {
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
-            <div className="w-10 h-10 rounded-xl bg-[#1e3a8a] flex items-center justify-center text-white font-[1000] shadow-lg shadow-blue-900/20">
+            <div className="w-10 h-10 rounded-xl bg-[#1e3a8a] flex items-center justify-center text-white font-[1000] shadow-lg shadow-blue-900/20 uppercase">
               {adminName.charAt(0)}
             </div>
           </div>
@@ -114,6 +112,7 @@ const OrgDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
               <div className="lg:col-span-2 bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
                 <div className="flex justify-between items-center mb-8">
                   <h3 className="text-sm font-[1000] uppercase tracking-wider text-slate-800">Xu hướng Năng lực Số</h3>
@@ -122,8 +121,9 @@ const OrgDashboard = () => {
                   </button>
                 </div>
                 
+                {/* SỬA LỖI TRẮNG MÀN HÌNH Ở ĐÂY: Đặt height={300} thay vì 100% */}
                 <div style={{ height: '300px', width: '100%' }}>
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={chartData}>
                       <defs>
                         <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
@@ -142,7 +142,7 @@ const OrgDashboard = () => {
               </div>
 
               <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-6 text-left">
                   <h3 className="text-sm font-[1000] uppercase tracking-wider text-slate-800">Top Học viên Xuất sắc</h3>
                   <button className="text-[10px] font-bold text-blue-600 hover:underline">Xem tất cả</button>
                 </div>
@@ -155,7 +155,7 @@ const OrgDashboard = () => {
                   <UserRow name="Hoàng Anh E" dept="Sales" score="885" />
                 </div>
 
-                <div className="mt-6 p-4 bg-green-50 rounded-2xl border border-green-100">
+                <div className="mt-6 p-4 bg-green-50 rounded-2xl border border-green-100 text-left">
                   <div className="flex items-center gap-2 mb-1">
                     <Leaf size={14} className="text-green-600" />
                     <span className="text-[10px] font-[1000] text-green-700 uppercase">Mẹo ESG</span>
@@ -174,9 +174,9 @@ const OrgDashboard = () => {
   );
 };
 
-/* --- Component con giữ nguyên --- */
+/* --- Sub-Components --- */
 const StatCard = ({ title, value, trend, icon, bg }) => (
-  <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+  <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-all group text-left">
     <div className="flex justify-between items-start mb-4">
       <div style={{ backgroundColor: bg }} className="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm">
         {icon}
@@ -193,7 +193,7 @@ const StatCard = ({ title, value, trend, icon, bg }) => (
 );
 
 const UserRow = ({ name, dept, score }) => (
-  <div className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer border-b border-slate-50 last:border-0">
+  <div className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer border-b border-slate-50 last:border-0 text-left">
     <div className="flex items-center gap-3">
       <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-[1000] text-xs">
         {name.charAt(0)}
