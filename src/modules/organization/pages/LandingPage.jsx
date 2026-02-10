@@ -145,10 +145,11 @@ const LandingPage = () => {
 
             {/* Desktop Menu - ĐÃ CẬP NHẬT DÙNG LINK */}
             <div className="hidden md:flex items-center space-x-10">
-              <Link to="/solutions" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Giải pháp</Link>
-              <Link to="/solutions" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Lợi ích</Link>
-              <Link to="/about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Đánh giá</Link>
-              <Link to="/about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Về chúng tôi</Link>
+            <Link to="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Trang chủ</Link>
+            <Link to="/solutions" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Giải pháp</Link>
+            <Link to="/benefits" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Lợi ích</Link>
+            <Link to="/testimonials" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Đánh giá</Link>
+            <Link to="/about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Về chúng tôi</Link>
             </div>
 
             <div className="flex items-center gap-4">

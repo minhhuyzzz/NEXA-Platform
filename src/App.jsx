@@ -18,6 +18,10 @@ import UserMyNFT from './modules/user/pages/UserMyNFT';
 import UserExams from './modules/user/pages/UserExams';
 import UserProfile from './modules/user/pages/UserProfile';
 
+import SolutionsPage from './modules/organization/pages/SolutionsPage';
+import AboutPage from './modules/organization/pages/AboutPage';
+import BenefitsPage from './modules/organization/pages/BenefitsPage';
+import TestimonialsPage from './modules/organization/pages/TestimonialsPage';
 function App() {
   return (
     <Routes>
@@ -42,6 +46,11 @@ function App() {
       <Route path="/user/nft" element={<UserMyNFT />} />
       <Route path="/user/exams" element={<UserExams />} />
       <Route path="/user/profile" element={<UserProfile />} />
+      
+      <Route path="/solutions" element={<SolutionsPage />} /> 
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/benefits" element={<BenefitsPage />} />
+      <Route path="/testimonials" element={<TestimonialsPage />} />         
     </Routes>
   );
 }
