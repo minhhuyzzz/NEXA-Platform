@@ -139,7 +139,74 @@ const SolutionsPage = () => {
             Bắt đầu dùng thử miễn phí <ArrowRight size={20}/>
          </button>
       </section>
+{/* Footer */}
+<footer className="bg-[#1a1e27] text-white py-12 md:py-16 lg:py-20">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 xl:gap-12 mb-12 lg:mb-16">
+            {/* Column 1 - Brand */}
+            <div className="space-y-4 lg:max-w-xs">
+              <div className="flex items-center gap-3">
+                <img src={LOGO_URL} alt="NEXA Logo" className="w-10 h-10 md:w-11 md:h-11 rounded-lg object-cover shadow-lg flex-shrink-0" />
+                <span className="text-xl md:text-2xl font-black text-white tracking-tight">NEXA</span>
+              </div>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Nền tảng AI tiên phong trong việc đánh giá và nâng cao năng lực số, định hình tương lai giáo dục Đại học và Xã hội học tập tại Việt Nam.
+              </p>
+            </div>
 
+            {/* Column 2 - Hệ sinh thái */}
+            <div>
+              <h4 className="text-white font-bold mb-4 md:mb-6 text-sm md:text-base">Hệ sinh thái</h4>
+              <ul className="space-y-2.5 md:space-y-3 text-sm text-slate-300">
+                <li><Link to="/solutions" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Đánh giá năng lực</Link></li>
+                <li><Link to="/solutions" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Lộ trình học tập</Link></li>
+                <li><Link to="/about" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Cộng đồng NEXA</Link></li>
+                <li><Link to="/solutions" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Dữ liệu mở</Link></li>
+              </ul>
+            </div>
+
+            {/* Column 3 - Hỗ trợ & Pháp lý */}
+            <div>
+              <h4 className="text-white font-bold mb-4 md:mb-6 text-sm md:text-base">Hỗ trợ & Pháp lý</h4>
+              <ul className="space-y-2.5 md:space-y-3 text-sm text-slate-300">
+                <li><a href="#" className="hover:text-blue-400 transition">Trung tâm trợ giúp</a></li>
+                <li><a href="#" className="hover:text-blue-400 transition">Điều khoản sử dụng</a></li>
+                <li><a href="#" className="hover:text-blue-400 transition">Chính sách bảo mật</a></li>
+                <li><a href="#" className="hover:text-blue-400 transition">Liên hệ hợp tác</a></li>
+              </ul>
+            </div>
+
+            {/* Column 4 - Liên hệ */}
+            <div>
+              <h4 className="text-white font-bold mb-4 md:mb-6 text-sm md:text-base">Liên hệ</h4>
+              <ul className="space-y-3 md:space-y-4 text-sm text-slate-300">
+                <li className="flex items-start gap-3">
+                  <Icons.MapPin className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">TP. Hồ Chí Minh, Việt Nam</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Icons.Mail className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  <a href="mailto:contact@nexa.edu.vn" className="hover:text-white transition">contact@nexa.edu.vn</a>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Icons.Phone className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  <a href="tel:1900xxxx" className="hover:text-white transition">1900 xxxx</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="border-t border-slate-600/80 pt-6 md:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-400">
+            <p>© 2026 NEXA Education. Phát triển bởi Zero to One Team.</p>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-white transition">Facebook</a>
+              <a href="#" className="hover:text-white transition">LinkedIn</a>
+              <a href="#" className="hover:text-white transition">YouTube</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
