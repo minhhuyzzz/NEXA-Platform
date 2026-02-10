@@ -2,57 +2,87 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Trophy, XCircle, RefreshCcw, Home, Share2, Award, 
-  Brain, Sparkles, ChevronRight, BarChart3, BookOpen 
+  Brain, Sparkles, BookOpen, AlertCircle 
 } from 'lucide-react';
-// 👇 IMPORT SERVICE AI
+// 👇 Import service AI thật
 import { getGeminiAnalysis } from '../../../services/aiService';
 
 const UserQuizResult = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const { score, totalQuestions, passed, questions, userAnswers } = location.state || { 
-    score: 0, totalQuestions: 0, passed: false, questions: [], userAnswers: {} 
-  };
+  // 1. LẤY DỮ LIỆU AN TOÀN (Safe Destructuring)
+  const state = location.state || {}; // Nếu không có state thì gán rỗng
+  const { score = 0, totalQuestions = 0, passed = false, questions = [], userAnswers = {} } = state;
 
-  const percentage = Math.round((score / totalQuestions) * 100) || 0;
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [analysis, setAnalysis] = useState(null);
+  const [hasError, setHasError] = useState(false); // Biến kiểm tra lỗi dữ liệu
 
-  // --- LOGIC GỌI AI THẬT ---
+  const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+
+  // --- LOGIC CHÍNH ---
   useEffect(() => {
-    const runAnalysis = async () => {
-        // 1. Tính toán thống kê dữ liệu tại máy (để vẽ biểu đồ nhanh)
-        const topicStats = {};
-        questions.forEach((q, index) => {
-            const topic = q.topic || "Kiến thức chung";
-            if (!topicStats[topic]) topicStats[topic] = { total: 0, correct: 0 };
-            
-            topicStats[topic].total += 1;
-            if (userAnswers[index] === q.correct) {
-                topicStats[topic].correct += 1;
-            }
-        });
-
-        // Tính % cho từng topic
-        Object.keys(topicStats).forEach(topic => {
-            const rate = (topicStats[topic].correct / topicStats[topic].total) * 100;
-            topicStats[topic].rate = Math.round(rate);
-        });
-
-        // 2. Gọi Gemini để lấy lời khuyên (Async)
-        // Chúng ta vẫn tính toán xong số liệu rồi mới gửi cho AI để nó "chém gió" (nhận xét)
-        const aiAdvice = await getGeminiAnalysis(score, totalQuestions, topicStats);
-
-        setAnalysis({ 
-            topicStats, 
-            suggestion: aiAdvice // Lời khuyên từ Gemini
-        });
+    // Nếu dữ liệu trống (do F5 trang), dừng lại ngay
+    if (!questions || questions.length === 0) {
+        setHasError(true);
         setIsAnalyzing(false);
+        return;
+    }
+
+    const runAnalysis = async () => {
+        try {
+            // A. Tính toán thống kê tại máy (Local)
+            const topicStats = {};
+            questions.forEach((q, index) => {
+                const topic = q.topic || "Tổng hợp";
+                if (!topicStats[topic]) topicStats[topic] = { total: 0, correct: 0 };
+                
+                topicStats[topic].total += 1;
+                if (userAnswers[index] === q.correct) {
+                    topicStats[topic].correct += 1;
+                }
+            });
+
+            // Tính %
+            Object.keys(topicStats).forEach(topic => {
+                const rate = (topicStats[topic].correct / topicStats[topic].total) * 100;
+                topicStats[topic].rate = Math.round(rate);
+            });
+
+            // B. GỌI GEMINI AI (Async)
+            // Gọi hàm từ service, truyền dữ liệu vào
+            const aiAdvice = await getGeminiAnalysis(score, totalQuestions, topicStats);
+
+            setAnalysis({ 
+                topicStats, 
+                suggestion: aiAdvice 
+            });
+        } catch (err) {
+            console.error("Lỗi phân tích:", err);
+        } finally {
+            setIsAnalyzing(false); // Tắt loading dù thành công hay thất bại
+        }
     };
 
     runAnalysis();
-  }, []);
+  }, [questions, score, totalQuestions, userAnswers]);
+
+  // --- MÀN HÌNH LỖI (NẾU F5 TRANG) ---
+  if (hasError) {
+      return (
+          <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-center p-6">
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                  <AlertCircle size={40} className="text-red-500"/>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">Không tìm thấy kết quả</h2>
+              <p className="text-slate-500 mb-6">Dữ liệu bài thi đã bị xóa do tải lại trang.</p>
+              <button onClick={() => navigate('/user/exams')} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">
+                  Quay về danh sách bài thi
+              </button>
+          </div>
+      )
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 pb-12">
@@ -66,7 +96,7 @@ const UserQuizResult = () => {
 
       <div className="max-w-4xl mx-auto px-6 -mt-40 relative z-10">
         
-        {/* CARD TỔNG QUAN */}
+        {/* CARD KẾT QUẢ CHÍNH */}
         <div className="bg-white rounded-[32px] shadow-2xl overflow-hidden border border-slate-100 mb-8">
             <div className="p-8 md:p-12 text-center">
                 <div className={`mx-auto w-28 h-28 rounded-full flex items-center justify-center shadow-xl mb-6 ring-8 ${passed ? 'bg-green-50 ring-green-100' : 'bg-red-50 ring-red-100'}`}>
@@ -80,14 +110,9 @@ const UserQuizResult = () => {
                 <h1 className="text-4xl font-[1000] text-slate-900 mb-3 tracking-tight">
                     {passed ? 'Xuất sắc! Bạn đã vượt qua' : 'Rất tiếc, chưa đạt yêu cầu'}
                 </h1>
-                <p className="text-slate-500 text-lg font-medium mb-10 max-w-lg mx-auto">
-                    {passed 
-                        ? 'Chúc mừng bạn đã hoàn thành bài kiểm tra năng lực số.' 
-                        : 'Đừng nản lòng. Hãy xem phân tích từ AI bên dưới để cải thiện nhé.'}
-                </p>
-
+                
                 {/* Grid điểm số */}
-                <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl mx-auto">
+                <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl mx-auto mt-8">
                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                         <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Điểm số</div>
                         <div className={`text-4xl font-[1000] ${passed ? 'text-green-600' : 'text-red-500'}`}>{score * 10}</div>
@@ -121,9 +146,8 @@ const UserQuizResult = () => {
 
                     {isAnalyzing ? (
                         <div className="flex flex-col items-center justify-center py-10 space-y-4">
-                            {/* Hiệu ứng loading */}
                             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                            <p className="text-slate-500 font-bold animate-pulse">Gemini đang phân tích bài làm của bạn...</p>
+                            <p className="text-slate-500 font-bold animate-pulse">Gemini đang đọc bài làm của bạn...</p>
                         </div>
                     ) : (
                         <div className="space-y-6">
@@ -140,18 +164,17 @@ const UserQuizResult = () => {
                                 </div>
                             </div>
 
-                            {/* Chi tiết từng chủ đề (Vẽ biểu đồ) */}
+                            {/* Chi tiết từng chủ đề */}
                             <div className="space-y-4">
-                                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Chi tiết năng lực</h3>
-                                {analysis && Object.keys(analysis.topicStats).map((topic, index) => {
+                                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Năng lực thành phần</h3>
+                                {analysis && analysis.topicStats && Object.keys(analysis.topicStats).map((topic, index) => {
                                     const stats = analysis.topicStats[topic];
                                     const color = stats.rate >= 80 ? 'bg-green-500' : stats.rate >= 50 ? 'bg-yellow-500' : 'bg-red-500';
-                                    
                                     return (
                                         <div key={index} className="space-y-2">
                                             <div className="flex justify-between text-sm font-bold text-slate-700">
                                                 <span>{topic}</span>
-                                                <span>{stats.rate}% ({stats.correct}/{stats.total})</span>
+                                                <span>{stats.rate}%</span>
                                             </div>
                                             <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
                                                 <div className={`h-full ${color} rounded-full transition-all duration-1000`} style={{ width: `${stats.rate}%` }}></div>
@@ -167,26 +190,16 @@ const UserQuizResult = () => {
 
             {/* Cột phải: Hành động */}
             <div className="space-y-6">
-                {passed && (
-                    <div className="bg-gradient-to-br from-indigo-900 to-slate-900 p-8 rounded-[32px] shadow-xl text-white text-center relative overflow-hidden group cursor-pointer" onClick={() => navigate('/user/nft')}>
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-                        <div className="relative z-10">
-                            <Award className="mx-auto mb-4 text-yellow-400" size={48} />
-                            <h3 className="text-xl font-[1000] mb-2">Claim NFT Badge</h3>
-                            <p className="text-indigo-200 text-sm mb-6">Xác thực kỹ năng của bạn trên Blockchain ngay bây giờ.</p>
-                            <button className="w-full py-3 bg-white text-indigo-900 rounded-xl font-bold text-sm hover:bg-blue-50 transition shadow-lg">
-                                Nhận chứng chỉ
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {!passed && (
+                {passed ? (
+                    <button onClick={() => navigate('/user/nft')} className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+                        <Award size={24} /> Nhận NFT Badge
+                    </button>
+                ) : (
                     <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-lg text-center">
                         <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <BookOpen size={24} />
                         </div>
-                        <h3 className="font-bold text-slate-900 mb-2">Kiến thức cần bổ sung</h3>
+                        <h3 className="font-bold text-slate-900 mb-2">Cần cải thiện</h3>
                         <p className="text-xs text-slate-500 mb-4">Dựa trên kết quả, bạn nên ôn tập lại kiến thức.</p>
                         <button onClick={() => navigate('/user/learning')} className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-700 transition">
                             Đến khoá học
@@ -205,7 +218,6 @@ const UserQuizResult = () => {
             </div>
 
         </div>
-
       </div>
     </div>
   );
