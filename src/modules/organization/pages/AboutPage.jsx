@@ -82,7 +82,7 @@ const AboutPage = () => {
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
             <div className="relative">
                 <div className="absolute inset-0 bg-blue-600 rounded-3xl rotate-6 opacity-20"></div>
-                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop" alt="Team" className="rounded-3xl shadow-2xl relative z-10" />
+                <img src="https://i.postimg.cc/QtxHpQcz/team.jpg" alt="Team" className="rounded-3xl shadow-2xl relative z-10" />
             </div>
             <div className="space-y-8">
                 <h2 className="text-4xl font-black text-slate-900">Zero to One Team</h2>
