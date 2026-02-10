@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+/* 1. Import Link và useNavigate */
+import { useNavigate, Link } from 'react-router-dom';
 
-/* --- ICONS COMPONENTS (Giữ nguyên không đổi) --- */
+/* --- ICONS COMPONENTS (Giữ nguyên bộ icon SVG đẹp của bạn) --- */
 const Icons = {
   Globe: (props) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -81,7 +82,7 @@ const LandingPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // --- HÀM ĐIỀU HƯỚNG MỚI ---
+  /* Logic chuyển trang cho nút Button */
   const handleLogin = () => {
     navigate('/login');
   };
@@ -137,22 +138,22 @@ const LandingPage = () => {
       <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-lg border-b border-slate-200 shadow-sm' : 'bg-white/90 backdrop-blur-md border-b border-slate-100'}`}>
         <div className="max-w-screen-2xl mx-auto px-6 lg:px-12">
           <div className="flex justify-between items-center h-20">
-            <div className="flex items-center gap-3 cursor-pointer">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
               <img src={LOGO_URL} alt="NEXA Logo" className="w-10 h-10 rounded-lg object-cover shadow-sm" />
               <span className="text-2xl font-bold text-slate-800 tracking-tight">NEXA</span>
             </div>
 
-            {/* Desktop Menu */}
+            {/* Desktop Menu - ĐÃ CẬP NHẬT DÙNG LINK */}
             <div className="hidden md:flex items-center space-x-10">
-              <a href="#features" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Giải pháp</a>
-              <a href="#benefits" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Lợi ích</a>
-              <a href="#testimonials" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Đánh giá</a>
-              <a href="#sdg" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Về chúng tôi</a>
+              <Link to="/solutions" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Giải pháp</Link>
+              <Link to="/solutions" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Lợi ích</Link>
+              <Link to="/about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Đánh giá</Link>
+              <Link to="/about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Về chúng tôi</Link>
             </div>
 
             <div className="flex items-center gap-4">
               
-              {/* Nút Đăng nhập - Sửa onClick */}
+              {/* Nút Đăng nhập */}
               <button 
                 onClick={handleLogin}
                 className="hidden md:flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-blue-600 transition px-4 py-2"
@@ -161,7 +162,7 @@ const LandingPage = () => {
                 Đăng nhập
               </button>
 
-              {/* Nút Đăng ký ngay - Sửa Text & onClick */}
+              {/* Nút Đăng ký ngay */}
               <button 
                 onClick={handleRegister} 
                 className="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-0.5"
@@ -183,10 +184,10 @@ const LandingPage = () => {
           {mobileMenuOpen && (
             <div className="md:hidden py-6 border-t border-slate-100">
               <div className="flex flex-col space-y-4">
-                <a href="#features" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Giải pháp</a>
-                <a href="#benefits" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Lợi ích</a>
-                <a href="#testimonials" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Đánh giá</a>
-                <a href="#sdg" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Về chúng tôi</a>
+                <Link to="/solutions" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition" onClick={() => setMobileMenuOpen(false)}>Giải pháp</Link>
+                <Link to="/solutions" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition" onClick={() => setMobileMenuOpen(false)}>Lợi ích</Link>
+                <Link to="/about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition" onClick={() => setMobileMenuOpen(false)}>Đánh giá</Link>
+                <Link to="/about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition" onClick={() => setMobileMenuOpen(false)}>Về chúng tôi</Link>
               </div>
             </div>
           )}
@@ -224,7 +225,7 @@ const LandingPage = () => {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             
-            {/* Nút Test miễn phí (Cũng trỏ về trang Đăng ký) */}
+            {/* Nút Test miễn phí (Trỏ về trang Đăng ký) */}
             <button 
                 onClick={handleRegister} 
                 className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white text-base font-bold rounded-full hover:bg-blue-700 transition shadow-xl shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-1 flex items-center justify-center gap-2"
@@ -233,7 +234,8 @@ const LandingPage = () => {
               Test năng lực miễn phí
             </button>
 
-            <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border-2 border-slate-200 text-base font-bold rounded-full hover:border-blue-300 hover:shadow-lg transition flex items-center justify-center gap-2">
+            {/* Nút Tìm hiểu thêm (Trỏ về trang Giải pháp) */}
+            <button onClick={() => navigate('/solutions')} className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border-2 border-slate-200 text-base font-bold rounded-full hover:border-blue-300 hover:shadow-lg transition flex items-center justify-center gap-2">
               <Icons.BookOpen className="w-5 h-5" />
               Tìm hiểu thêm
             </button>
@@ -535,10 +537,10 @@ const LandingPage = () => {
             <div>
               <h4 className="text-white font-bold mb-4 md:mb-6 text-sm md:text-base">Hệ sinh thái</h4>
               <ul className="space-y-2.5 md:space-y-3 text-sm text-slate-300">
-                <li><a href="#" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Đánh giá năng lực</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Lộ trình học tập</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Cộng đồng NEXA</a></li>
-                <li><a href="#" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Dữ liệu mở</a></li>
+                <li><Link to="/solutions" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Đánh giá năng lực</Link></li>
+                <li><Link to="/solutions" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Lộ trình học tập</Link></li>
+                <li><Link to="/about" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Cộng đồng NEXA</Link></li>
+                <li><Link to="/solutions" className="hover:text-blue-400 transition flex items-center gap-2"><span className="text-slate-500">&gt;</span> Dữ liệu mở</Link></li>
               </ul>
             </div>
 
