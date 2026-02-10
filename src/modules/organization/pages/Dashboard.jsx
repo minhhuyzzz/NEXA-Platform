@@ -5,7 +5,6 @@ import {
   Settings, LogOut, Bell, Search, Filter, ArrowUpRight, Zap, Leaf 
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
 const colors = {
   primary: '#0EA5E9',       
   primaryLight: '#E0F2FE',  
@@ -44,7 +43,7 @@ const OrgDashboard = () => {
       <aside className="w-72 bg-white border-r border-slate-100 flex flex-col h-screen shrink-0">
         <div className="p-8 flex items-center gap-3">
           <div className="w-10 h-10 bg-[#3b66f5] rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">N</div>
-          <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">NEXA Org</span>
+          <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">NEXA Admin</span>
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-2">

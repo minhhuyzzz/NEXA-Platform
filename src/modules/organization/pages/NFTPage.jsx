@@ -105,9 +105,12 @@ const NFTPage = () => {
             label="Chứng chỉ & NFT" 
             // Trang hiện tại không cần onClick
           />
-          
           <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
-          <SidebarItem icon={<Settings size={20}/>} label="Cài đặt hệ thống" />
+          <SidebarItem 
+            icon={<Settings size={20}/>} 
+            label="Cài đặt hệ thống" 
+            onClick={() => navigate('/admin/settings')} 
+          />
         </nav>
         <div className="p-6 border-t border-slate-50">
           <button onClick={() => navigate('/login')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all">
