@@ -22,6 +22,9 @@ import SolutionsPage from './modules/organization/pages/SolutionsPage';
 import AboutPage from './modules/organization/pages/AboutPage';
 import BenefitsPage from './modules/organization/pages/BenefitsPage';
 import TestimonialsPage from './modules/organization/pages/TestimonialsPage';
+
+import UserQuiz from './modules/user/pages/UserQuiz';
+import UserQuizResult from './modules/user/pages/UserQuizResult';
 function App() {
   return (
     <Routes>
@@ -50,7 +53,10 @@ function App() {
       <Route path="/solutions" element={<SolutionsPage />} /> 
       <Route path="/about" element={<AboutPage />} />
       <Route path="/benefits" element={<BenefitsPage />} />
-      <Route path="/testimonials" element={<TestimonialsPage />} />         
+      <Route path="/testimonials" element={<TestimonialsPage />} />   
+
+      <Route path="/user/quiz-take" element={<UserQuiz />} />
+      <Route path="/user/quiz-result" element={<UserQuizResult />} />      
     </Routes>
   );
 }
