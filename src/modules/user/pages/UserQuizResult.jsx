@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Trophy, XCircle, RefreshCcw, Home, Share2, Award, 
+  Trophy, XCircle, RefreshCcw, Home, Award, 
   Brain, Sparkles, BookOpen, AlertCircle 
 } from 'lucide-react';
-// 👇 Import service AI thật
+// Import dịch vụ AI
 import { getGeminiAnalysis } from '../../../services/aiService';
 
 const UserQuizResult = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // 1. LẤY DỮ LIỆU AN TOÀN (Safe Destructuring)
-  const state = location.state || {}; // Nếu không có state thì gán rỗng
+  // 1. LẤY DỮ LIỆU AN TOÀN (Chống crash khi F5)
+  const state = location.state || {};
   const { score = 0, totalQuestions = 0, passed = false, questions = [], userAnswers = {} } = state;
 
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [analysis, setAnalysis] = useState(null);
-  const [hasError, setHasError] = useState(false); // Biến kiểm tra lỗi dữ liệu
+  const [hasError, setHasError] = useState(false); // Biến kiểm tra lỗi
 
   const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
 
   // --- LOGIC CHÍNH ---
   useEffect(() => {
-    // Nếu dữ liệu trống (do F5 trang), dừng lại ngay
+    // 🔴 KIỂM TRA QUAN TRỌNG: Nếu không có câu hỏi (do F5), dừng ngay lập tức
     if (!questions || questions.length === 0) {
         setHasError(true);
-        setIsAnalyzing(false);
+        setIsAnalyzing(false); // Tắt loading ngay
         return;
     }
 
@@ -50,8 +50,7 @@ const UserQuizResult = () => {
                 topicStats[topic].rate = Math.round(rate);
             });
 
-            // B. GỌI GEMINI AI (Async)
-            // Gọi hàm từ service, truyền dữ liệu vào
+            // B. GỌI GEMINI AI THẬT (Key miễn phí)
             const aiAdvice = await getGeminiAnalysis(score, totalQuestions, topicStats);
 
             setAnalysis({ 
@@ -60,24 +59,34 @@ const UserQuizResult = () => {
             });
         } catch (err) {
             console.error("Lỗi phân tích:", err);
+            // Nếu AI lỗi, vẫn hiện kết quả nhưng báo câu mặc định
+            setAnalysis({ 
+                topicStats: {}, 
+                suggestion: "AI đang bận, nhưng bạn hãy chú ý ôn tập lại các câu làm sai nhé!" 
+            });
         } finally {
-            setIsAnalyzing(false); // Tắt loading dù thành công hay thất bại
+            setIsAnalyzing(false); // ✅ QUAN TRỌNG: Luôn tắt loading dù thành công hay thất bại
         }
     };
 
     runAnalysis();
   }, [questions, score, totalQuestions, userAnswers]);
 
-  // --- MÀN HÌNH LỖI (NẾU F5 TRANG) ---
+  // --- GIAO DIỆN LỖI (KHI F5 TRANG) ---
   if (hasError) {
       return (
-          <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-center p-6">
-              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                  <AlertCircle size={40} className="text-red-500"/>
+          <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-center p-6 font-sans">
+              <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6 shadow-sm">
+                  <AlertCircle size={48} className="text-red-500"/>
               </div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">Không tìm thấy kết quả</h2>
-              <p className="text-slate-500 mb-6">Dữ liệu bài thi đã bị xóa do tải lại trang.</p>
-              <button onClick={() => navigate('/user/exams')} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">
+              <h2 className="text-3xl font-[1000] text-slate-800 mb-3">Dữ liệu không tìm thấy</h2>
+              <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                  Có vẻ bạn đã tải lại trang (F5). Dữ liệu bài thi tạm thời đã bị xóa để bảo mật.
+              </p>
+              <button 
+                onClick={() => navigate('/user/exams')} 
+                className="px-8 py-4 bg-[#1e3a8a] text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition transform hover:-translate-y-1"
+              >
                   Quay về danh sách bài thi
               </button>
           </div>
@@ -147,7 +156,7 @@ const UserQuizResult = () => {
                     {isAnalyzing ? (
                         <div className="flex flex-col items-center justify-center py-10 space-y-4">
                             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                            <p className="text-slate-500 font-bold animate-pulse">Gemini đang đọc bài làm của bạn...</p>
+                            <p className="text-slate-500 font-bold animate-pulse">Đang kết nối Gemini AI...</p>
                         </div>
                     ) : (
                         <div className="space-y-6">
