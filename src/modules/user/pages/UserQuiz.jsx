@@ -48,6 +48,7 @@ const UserQuiz = () => {
     setAnswers({ ...answers, [currentQuestion]: optionIndex });
   };
 
+  // --- CẬP NHẬT HÀM NỘP BÀI (QUAN TRỌNG) ---
   const handleSubmit = (autoSubmit = false) => {
     if (autoSubmit || window.confirm('Bạn có chắc chắn muốn nộp bài không?')) {
       setIsSubmitted(true);
@@ -66,7 +67,9 @@ const UserQuiz = () => {
             state: { 
                 score: score, 
                 totalQuestions: examQuestions.length,
-                passed: passed 
+                passed: passed,
+                questions: examQuestions, // Gửi danh sách câu hỏi
+                userAnswers: answers      // Gửi đáp án người dùng chọn
             } 
         });
       }, 1500);
@@ -210,7 +213,7 @@ const UserQuiz = () => {
                     <AlertCircle className="text-blue-600 flex-shrink-0" size={20} />
                     <p className="text-xs text-blue-800 font-medium leading-relaxed">
                         <span className="font-bold uppercase block mb-1">Cơ chế Random:</span>
-                        Đề thi được sinh ngẫu nhiên từ kho dữ liệu 200 câu hỏi. Mỗi lần thi là một đề khác nhau.
+                        Đề thi được sinh ngẫu nhiên từ kho dữ liệu. Mỗi lần thi là một đề khác nhau.
                     </p>
                 </div>
             </div>
