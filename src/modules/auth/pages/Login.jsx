@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-// Import icon nếu cần, ở đây dùng ảnh có sẵn nên không bắt buộc import Lucide
+/* 1. Import Link và useNavigate */
+import { useNavigate, Link } from 'react-router-dom';
+// Import icon mũi tên quay lại từ thư viện lucide-react (nếu bạn đã cài)
+// Hoặc dùng SVG trực tiếp như bên dưới để không phụ thuộc thư viện
+import { ArrowLeft } from 'lucide-react'; 
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,17 +33,26 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex font-sans text-slate-900 bg-slate-50">
+    <div className="min-h-screen flex font-sans text-slate-900 bg-slate-50 relative">
       
+      {/* NÚT QUAY VỀ TRANG CHỦ (ABSOLUTE POSITION) */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full text-sm font-bold text-slate-600 hover:text-blue-600 hover:bg-white shadow-sm transition-all border border-slate-200/50"
+      >
+        <ArrowLeft size={16} /> {/* Icon mũi tên */}
+        Quay về trang chủ
+      </Link>
+
       {/* CỘT TRÁI: FORM ĐĂNG NHẬP */}
-      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-white lg:max-w-xl xl:max-w-2xl">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-white lg:max-w-xl xl:max-w-2xl relative z-10">
+        <div className="w-full max-w-md space-y-8 mt-12 md:mt-0"> {/* Thêm margin-top để tránh nút Back đè lên trên mobile */}
           
           {/* Logo & Header */}
-          <div className="flex items-center gap-3 mb-8 cursor-pointer" onClick={() => navigate('/')}>
+          <Link to="/" className="flex items-center gap-3 mb-8 cursor-pointer w-fit">
              <img src="https://i.postimg.cc/Vv0HrbfK/ảnh_logo_nexa.png" alt="NEXA" className="w-10 h-10 rounded-lg object-cover shadow-sm" />
              <span className="text-2xl font-black text-blue-900 tracking-tighter">NEXA</span>
-          </div>
+          </Link>
 
           <div className="space-y-3">
             <h1 className="text-4xl font-black text-slate-900 tracking-tight">Chào mừng trở lại! 👋</h1>
@@ -63,7 +75,7 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Mật khẩu</label>
-                 <a href="#" className="text-xs text-blue-600 font-bold hover:underline uppercase">Quên mật khẩu?</a>
+                 <Link to="/forgot-password" className="text-xs text-blue-600 font-bold hover:underline uppercase">Quên mật khẩu?</Link>
               </div>
               <input 
                 type="password" 
@@ -104,7 +116,7 @@ const Login = () => {
           </div>
 
           <p className="text-center text-slate-500 font-medium pt-4">
-            Chưa có tài khoản? <span onClick={() => navigate('/register')} className="text-blue-600 font-bold cursor-pointer hover:underline">Đăng ký miễn phí</span>
+            Chưa có tài khoản? <Link to="/register" className="text-blue-600 font-bold cursor-pointer hover:underline">Đăng ký miễn phí</Link>
           </p>
         </div>
       </div>
