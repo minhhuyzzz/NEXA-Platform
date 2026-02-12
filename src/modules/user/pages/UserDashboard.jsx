@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
-import { Award, BookOpen, LogOut, Compass, Zap, Shield, Sparkles, Pencil, Brain, Users, User, ArrowRight } from 'lucide-react';
+import { 
+  Award, BookOpen, LogOut, Compass, Zap, Shield, Sparkles, 
+  Pencil, Brain, Users, User, ArrowRight, LayoutDashboard // 👈 Thêm icon này
+} from 'lucide-react';
 
 const LOGO_URL = "https://i.postimg.cc/Vv0HrbfK/ảnh_logo_nexa.png";
 
@@ -12,7 +15,7 @@ const SidebarItem = ({ icon, label, active, onClick }) => (
     onClick={onClick}
     className={`w-full flex items-center gap-3 px-6 py-4 rounded-2xl cursor-pointer transition-all duration-300 group
     ${active 
-      ? 'bg-blue-50 text-[#1e3a8a] shadow-sm translate-x-1' 
+      ? 'bg-blue-50 text-[#1e3a8a] shadow-sm translate-x-1 font-bold' 
       : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600 hover:translate-x-1'}`}
   >
     <div className={`transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
@@ -41,6 +44,7 @@ const MentorCard = ({ icon, title, desc, label }) => (
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Dùng để kiểm tra đang ở trang nào
 
   // 1. LẤY DỮ LIỆU ĐÃ LƯU
   const savedData = JSON.parse(localStorage.getItem('nexa_user') || '{}');
@@ -49,7 +53,7 @@ const UserDashboard = () => {
 
   // 2. LOGIC ĐĂNG XUẤT
   const handleLogout = () => {
-    localStorage.removeItem('nexa_user'); // Xóa session
+    localStorage.removeItem('nexa_user'); 
     localStorage.removeItem('nexa_role'); 
     navigate('/login');
   };
@@ -64,7 +68,6 @@ const UserDashboard = () => {
   ];
 
   const aiSuggestions = useMemo(() => {
-    // Mapping icon cho từng loại kỹ năng
     const getIcon = (subject) => {
       if (subject.includes('Sáng tạo')) return <Pencil className="text-orange-500" />;
       if (subject.includes('Giao tiếp')) return <Users className="text-green-500" />;
@@ -78,6 +81,9 @@ const UserDashboard = () => {
       .slice(0, 2)
       .map(s => ({ ...s, icon: getIcon(s.subject) }));
   }, [skillData]);
+
+  // Kiểm tra đường dẫn hiện tại
+  const currentPath = location.pathname;
 
   return (
     <div className="h-screen w-full flex bg-[#f8fafc] font-sans text-slate-900 overflow-hidden">
@@ -94,29 +100,42 @@ const UserDashboard = () => {
         {/* MENU */}
         <nav className="flex-1 px-4 space-y-2 py-4">
           
-          {/* NÚT 1: LỘ TRÌNH (Đang Active) */}
+          {/* 👇 MỤC 1: TỔNG QUAN (MỚI THÊM) */}
           <SidebarItem 
-            active 
-            icon={<Compass size={20}/>} 
-            label="Lộ trình học tập" 
+            // Nếu đang ở /user/dashboard thì sáng đèn
+            active={currentPath === '/user/dashboard'} 
+            icon={<LayoutDashboard size={20}/>} 
+            label="Tổng quan" 
+            onClick={() => navigate('/user/dashboard')}
           />
 
-          {/* NÚT 2: BÀI KIỂM TRA */}
+          {/* MỤC 2: LỘ TRÌNH */}
           <SidebarItem 
+            active={currentPath === '/user/learning'} 
+            icon={<Compass size={20}/>} 
+            label="Lộ trình học tập" 
+            onClick={() => navigate('/user/learning')} // Chuyển sang trang lộ trình
+          />
+
+          {/* MỤC 3: BÀI KIỂM TRA */}
+          <SidebarItem 
+            active={currentPath === '/user/exams'}
             icon={<BookOpen size={20}/>} 
             label="Bài kiểm tra" 
             onClick={() => navigate('/user/exams')} 
           />
 
-          {/* NÚT 3: CHỨNG CHỈ */}
+          {/* MỤC 4: CHỨNG CHỈ */}
           <SidebarItem 
+            active={currentPath === '/user/nft'}
             icon={<Award size={20}/>} 
             label="Chứng chỉ NFT" 
             onClick={() => navigate('/user/nft')} 
           />
 
-          {/* NÚT 4: HỒ SƠ */}
+          {/* MỤC 5: HỒ SƠ */}
           <SidebarItem 
+            active={currentPath === '/user/profile'}
             icon={<User size={20}/>} 
             label="Hồ sơ cá nhân" 
             onClick={() => navigate('/user/profile')} 
@@ -202,7 +221,6 @@ const UserDashboard = () => {
                   <span className="text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">60% Hoàn thành</span>
                 </div>
                 
-                {/* Course Item */}
                 <div className="flex gap-4 items-start group cursor-pointer">
                   <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
                       <Zap size={24} fill="currentColor" />
@@ -218,7 +236,6 @@ const UserDashboard = () => {
                   </div>
                 </div>
 
-                 {/* Course Item 2 */}
                  <div className="flex gap-4 items-start group cursor-pointer pt-4 border-t border-slate-50">
                   <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform">
                       <Shield size={24} />
