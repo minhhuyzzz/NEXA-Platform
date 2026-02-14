@@ -1,191 +1,177 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { 
-  LayoutDashboard, Users, FileBarChart, Award, 
-  Settings, LogOut, Search, Plus, CheckCircle2, 
-  UserCheck, Clock, MoreVertical, Loader2, ChevronLeft, ChevronRight
+  Search, Filter, MoreHorizontal, UserPlus, 
+  Mail, Building2, GraduationCap, Briefcase 
 } from 'lucide-react';
-
-/* =========================================
-   1. SUB-COMPONENTS (Tách nhỏ để tái sử dụng)
-   ========================================= */
-
-const SidebarItem = ({ icon, label, active, onClick }) => (
-  <button 
-    onClick={onClick} 
-    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 font-bold text-sm group
-    ${active 
-      ? 'bg-blue-50 text-[#3b66f5] shadow-sm translate-x-1' 
-      : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600 hover:translate-x-1'}`}
-  >
-    <div className={`transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
-      {icon}
-    </div>
-    <span className="tracking-tight">{label}</span>
-  </button>
-);
-
-const StatusBadge = ({ status }) => {
-  const config = { 
-    completed: { color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100', label: 'Đã cấp NFT', icon: CheckCircle2 },
-    active:    { color: 'text-blue-600',  bg: 'bg-blue-50',  border: 'border-blue-100',  label: 'Đang học',   icon: UserCheck },
-    pending:   { color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100', label: 'Chờ duyệt',  icon: Clock }
-  };
-  const item = config[status] || config.active;
-  const Icon = item.icon;
-
-  return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full w-fit border ${item.bg} ${item.color} ${item.border} shadow-sm`}>
-      <Icon size={12} strokeWidth={3} />
-      <span className="text-[9px] font-[1000] uppercase tracking-widest">{item.label}</span>
-    </div>
-  );
-};
-
-const TableRowSkeleton = () => (
-  <tr className="animate-pulse border-b border-slate-50">
-    <td className="px-8 py-5"><div className="h-10 w-48 bg-slate-100 rounded-xl"></div></td>
-    <td className="px-6 py-5"><div className="h-6 w-24 bg-slate-100 rounded-lg"></div></td>
-    <td className="px-6 py-5"><div className="h-6 w-20 bg-slate-100 rounded-full"></div></td>
-    <td className="px-8 py-5 text-right"><div className="h-8 w-8 bg-slate-100 rounded-full ml-auto"></div></td>
-  </tr>
-);
-
-/* =========================================
-   2. MAIN COMPONENT (Logic chính)
-   ========================================= */
+import { supabase } from '../../../services/supabaseClient';
 
 const StaffList = () => {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [filterRole, setFilterRole] = useState('all'); // all, learner, school, business
 
-  // Giả lập gọi API (Loading Effect)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setUsers([
-        { id: 1, name: 'Nguyễn Thị Bích', code: 'SV-2024001', email: 'bich.nguyen@edu.vn', status: 'completed', dept: 'Kế toán' },
-        { id: 2, name: 'Lê Văn Cường', code: 'GV-005', email: 'cuong.le@techcorp.com', status: 'active', dept: 'IT Soft' },
-        { id: 3, name: 'Phạm Minh Dũng', code: 'SV-2024088', email: 'dung.pm@iuh.edu.vn', status: 'pending', dept: 'Marketing' },
-        { id: 4, name: 'Hoàng Anh Tuấn', code: 'SV-2024102', email: 'tuan.ha@gmail.com', status: 'completed', dept: 'Sales' },
-        { id: 5, name: 'Trần Thu Hà', code: 'SV-2024155', email: 'ha.tran@design.com', status: 'active', dept: 'Design' },
-      ]);
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    const fetchOrgUsers = async () => {
+      try {
+        setLoading(true);
+
+        // 1. Lấy thông tin người đang đăng nhập (Admin/Giảng viên)
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) return;
+
+        // 2. Lấy Profile chi tiết của người đang đăng nhập để biết họ thuộc Tổ chức nào
+        const { data: myProfile, error: myError } = await supabase
+          .from('profiles')
+          .select('org_name, role') // Quan trọng: Lấy org_name
+          .eq('id', user.id)
+          .single();
+
+        if (myError) throw myError;
+        setCurrentUser(myProfile);
+
+        // 3. Lấy danh sách nhân sự THUỘC CÙNG TỔ CHỨC
+        // Logic: Chỉ lấy những ai có org_name GIỐNG org_name của người đang đăng nhập
+        let query = supabase
+          .from('profiles')
+          .select('*')
+          .eq('org_name', myProfile.org_name) // 👈 ĐÂY LÀ CHÌA KHÓA PHÂN QUYỀN
+          .neq('id', user.id); // Không hiện chính mình trong danh sách
+
+        // Nếu người xem là Giảng viên (school), chỉ cho xem Sinh viên (learner)
+        // Admin (business/school) thì được xem hết
+        if (myProfile.role === 'school' && myProfile.role !== 'business') {
+             // Tùy logic bên bạn, ví dụ Giảng viên chỉ xem được Learner
+             // query = query.eq('role', 'learner'); 
+        }
+
+        const { data: orgUsers, error: listError } = await query;
+        if (listError) throw listError;
+
+        setUsers(orgUsers || []);
+
+      } catch (error) {
+        console.error("Lỗi tải danh sách:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrgUsers();
   }, []);
 
-  // Tối ưu bộ lọc
-  const filteredUsers = useMemo(() => {
-    return users.filter(user => 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [users, searchTerm]);
+  // Lọc theo UI (Dropdown)
+  const filteredUsers = users.filter(user => 
+    filterRole === 'all' ? true : user.role === filterRole
+  );
+
+  const getRoleBadge = (role) => {
+    switch (role) {
+      case 'learner': return <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase border border-blue-100">Sinh viên</span>;
+      case 'school': return <span className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-xs font-bold uppercase border border-purple-100">Giảng viên</span>;
+      case 'business': return <span className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-bold uppercase border border-orange-100">Quản lý</span>;
+      default: return <span className="px-3 py-1 bg-slate-50 text-slate-500 rounded-full text-xs font-bold uppercase">Khác</span>;
+    }
+  };
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-900 overflow-hidden text-left">
+    <div className="space-y-6 animate-fade-in-up">
       
-     
-      {/* --- MAIN CONTENT --- */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-        <header className="px-8 py-6 border-b border-slate-100 bg-white/80 backdrop-blur-md flex justify-between items-center shrink-0 sticky top-0 z-10">
-          <div>
-            <h1 className="text-2xl font-[1000] tracking-tight uppercase text-[#0F172A]">Hồ sơ Nhân sự</h1>
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-wider mt-1">Danh sách thành viên tổ chức</p>
-          </div>
-          <div className="flex gap-3">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-blue-500 transition-colors" size={18} />
-              <input 
-                type="text" 
-                placeholder="Tìm kiếm thành viên..." 
-                className="pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl outline-none font-bold text-xs w-64 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all shadow-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <button className="flex items-center gap-2 px-5 py-3 bg-[#3b66f5] text-white rounded-xl font-[1000] text-xs uppercase tracking-widest hover:bg-blue-600 shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5 transition-all">
-              <Plus size={16} strokeWidth={3} /> Thêm mới
-            </button>
-          </div>
-        </header>
-
-        <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
-          <div className="max-w-7xl mx-auto space-y-6">
-             <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-              
-              {/* Table Header */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead className="bg-slate-50/50 border-b border-slate-100">
-                    <tr>
-                      <th className="px-8 py-5 text-[10px] font-[1000] text-slate-400 uppercase tracking-[0.2em]">Học viên</th>
-                      <th className="px-6 py-5 text-[10px] font-[1000] text-slate-400 uppercase tracking-[0.2em]">Phòng ban</th>
-                      <th className="px-6 py-5 text-[10px] font-[1000] text-slate-400 uppercase tracking-[0.2em]">Trạng thái</th>
-                      <th className="px-8 py-5 text-[10px] font-[1000] text-slate-400 uppercase tracking-[0.2em] text-right">Tác vụ</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {/* Hiệu ứng Loading Skeleton */}
-                    {isLoading ? (
-                      <>
-                        <TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton />
-                      </>
-                    ) : filteredUsers.length > 0 ? (
-                      filteredUsers.map((user) => (
-                        <tr key={user.id} className="hover:bg-blue-50/30 transition-colors group cursor-pointer">
-                          <td className="px-8 py-5">
-                            <div className="flex items-center gap-4 text-left">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-md group-hover:scale-110 transition-transform">
-                                {user.name.charAt(0)}
-                              </div>
-                              <div>
-                                <p className="font-[1000] text-sm text-slate-800 uppercase tracking-tight group-hover:text-blue-600 transition-colors">{user.name}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">{user.email}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <span className="px-3 py-1.5 rounded-lg bg-slate-50 text-slate-600 text-[10px] font-bold uppercase border border-slate-100 shadow-sm">{user.dept}</span>
-                          </td>
-                          <td className="px-6 py-5"><StatusBadge status={user.status} /></td>
-                          <td className="px-8 py-5 text-right">
-                            <button className="p-2 hover:bg-slate-100 rounded-full text-slate-300 hover:text-blue-600 transition-colors">
-                              <MoreVertical size={18} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="py-20 text-center">
-                          <div className="flex flex-col items-center justify-center text-slate-300">
-                            <Search size={48} className="mb-4 opacity-20" />
-                            <p className="text-sm font-bold uppercase tracking-wider">Không tìm thấy kết quả</p>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination (Footer) */}
-              {!isLoading && filteredUsers.length > 0 && (
-                <div className="mt-auto px-8 py-6 border-t border-slate-50 flex justify-between items-center bg-white">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Hiển thị {filteredUsers.length} kết quả</span>
-                  <div className="flex gap-2">
-                    <button className="p-2 rounded-xl border border-slate-100 text-slate-400 hover:bg-slate-50 hover:text-slate-600 disabled:opacity-50" disabled><ChevronLeft size={16}/></button>
-                    <button className="p-2 rounded-xl border border-slate-100 text-slate-400 hover:bg-slate-50 hover:text-slate-600"><ChevronRight size={16}/></button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+        <div>
+          <h1 className="text-3xl font-[1000] text-slate-900 tracking-tight">Nhân sự & Học viên 👥</h1>
+          <p className="text-slate-500 font-bold mt-1">
+            Danh sách thuộc đơn vị: <span className="text-blue-600 uppercase">{currentUser?.org_name || "Đang tải..."}</span>
+          </p>
         </div>
-      </main>
+        <button className="flex items-center gap-2 px-5 py-3 bg-[#1e3a8a] text-white rounded-xl font-bold text-sm hover:bg-blue-800 transition shadow-lg shadow-blue-900/20">
+            <UserPlus size={18} /> Thêm mới
+        </button>
+      </div>
+
+      {/* TOOLBAR */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 justify-between">
+        <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <input type="text" placeholder="Tìm kiếm theo tên hoặc email..." className="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-xl border-none outline-none font-bold text-slate-600 focus:ring-2 focus:ring-blue-100 transition" />
+        </div>
+        <div className="flex gap-3">
+             <select 
+                className="px-4 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-600 text-sm outline-none cursor-pointer hover:border-blue-400 transition"
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+             >
+                <option value="all">Tất cả vai trò</option>
+                <option value="learner">Sinh viên / Học viên</option>
+                <option value="school">Giảng viên</option>
+                <option value="business">Quản lý</option>
+             </select>
+             <button className="p-3 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition"><Filter size={20}/></button>
+        </div>
+      </div>
+
+      {/* TABLE LIST */}
+      <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden">
+        {loading ? (
+            <div className="p-12 text-center text-slate-400 font-bold">Đang tải danh sách...</div>
+        ) : filteredUsers.length === 0 ? (
+            <div className="p-12 text-center flex flex-col items-center">
+                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300"><Users size={32}/></div>
+                <p className="text-slate-500 font-bold">Chưa có nhân sự nào trong tổ chức "{currentUser?.org_name}".</p>
+                <p className="text-xs text-slate-400 mt-2">Hãy mời họ đăng ký và nhập đúng tên tổ chức này.</p>
+            </div>
+        ) : (
+            <table className="w-full text-left border-collapse">
+                <thead>
+                    <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-[1000] text-slate-400 uppercase tracking-wider">
+                        <th className="p-6">Họ và tên</th>
+                        <th className="p-6">Vai trò</th>
+                        <th className="p-6">Liên hệ</th>
+                        <th className="p-6">Ngày tham gia</th>
+                        <th className="p-6 text-right">Tác vụ</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                    {filteredUsers.map((u) => (
+                        <tr key={u.id} className="hover:bg-blue-50/30 transition-colors group">
+                            <td className="p-6">
+                                <div className="flex items-center gap-4">
+                                    <img src={u.avatar_url} alt={u.full_name} className="w-10 h-10 rounded-xl object-cover shadow-sm bg-slate-200" />
+                                    <div>
+                                        <p className="font-bold text-slate-800 text-sm group-hover:text-blue-700 transition">{u.full_name}</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">{u.org_name}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td className="p-6">
+                                {getRoleBadge(u.role)}
+                            </td>
+                            <td className="p-6">
+                                <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+                                    <Mail size={16} className="text-slate-400"/>
+                                    {/* Email nằm trong auth.users nên ở profile public có thể không lấy được trực tiếp nếu chưa sync, tạm hiển thị placeholder hoặc cột email nếu bạn đã thêm */}
+                                    <span className="truncate max-w-[150px]">user_{u.id.slice(0,4)}@nexa.edu.vn</span>
+                                </div>
+                            </td>
+                            <td className="p-6">
+                                <span className="text-sm font-bold text-slate-500">
+                                    {/* Giả lập ngày tham gia */}
+                                    {new Date().toLocaleDateString('vi-VN')} 
+                                </span>
+                            </td>
+                            <td className="p-6 text-right">
+                                <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-blue-600 transition">
+                                    <MoreHorizontal size={20} />
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        )}
+      </div>
     </div>
   );
 };
