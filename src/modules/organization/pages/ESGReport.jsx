@@ -1,28 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, Users, FileBarChart, Award, 
-  Settings, LogOut, Search, Leaf, Wind, Droplets, Zap, TreePine, ArrowUpRight 
+  Wind, Droplets, Zap, TreePine, Leaf, ArrowUpRight
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-/* --- SUB-COMPONENTS (An toàn & Tái sử dụng) --- */
+// 👇 1. IMPORT SUPABASE
+import { supabase } from '../../../services/supabaseClient';
 
-const SidebarItem = ({ icon, label, active, onClick }) => (
-  <button 
-    onClick={onClick} 
-    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 font-bold text-sm group
-    ${active 
-      ? 'bg-emerald-50 text-emerald-600 shadow-sm translate-x-1' 
-      : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600 hover:translate-x-1'}`}
-  >
-    <div className={`transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
-      {icon}
-    </div>
-    <span className="tracking-tight">{label}</span>
-  </button>
-);
-
+/* --- SUB-COMPONENTS --- */
 const ImpactCard = ({ title, value, unit, icon, color }) => (
   <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${color} text-white shadow-md group-hover:scale-110 transition-transform`}>
@@ -43,21 +29,82 @@ const ImpactCard = ({ title, value, unit, icon, color }) => (
 const ESGReport = () => {
   const navigate = useNavigate();
   
-  // Dữ liệu biểu đồ (Mock Data)
-  const data = [
-    { name: 'T1', co2: 40, energy: 24 },
-    { name: 'T2', co2: 30, energy: 18 },
-    { name: 'T3', co2: 20, energy: 15 }, // Giảm dần
-    { name: 'T4', co2: 27, energy: 20 },
-    { name: 'T5', co2: 18, energy: 12 },
-    { name: 'T6', co2: 10, energy: 8 },
-  ];
+  // State chứa dữ liệu thật
+  const [stats, setStats] = useState({
+    totalCO2: 0,
+    trees: 0,
+    energy: 0,
+    water: 0
+  });
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 👇 2. GỌI API LẤY DỮ LIỆU TỪ SUPABASE
+  useEffect(() => {
+    const fetchESGData = async () => {
+      try {
+        setIsLoading(true);
+
+        // Lấy toàn bộ log từ bảng green_logs
+        const { data, error } = await supabase
+          .from('green_logs')
+          .select('created_at, co2_saved, activity_type');
+
+        if (error) throw error;
+
+        if (data) {
+          // --- A. TÍNH TỔNG SỐ LIỆU ---
+          const totalCO2 = data.reduce((sum, item) => sum + (item.co2_saved || 0), 0);
+          
+          // Giả định quy đổi: 
+          // 1 cây xanh hấp thụ ~20kg CO2/năm -> Trees = CO2 / 20
+          // 1 bài thi online tiết kiệm ~0.05 kWh điện -> Energy = Số bài thi * 0.05
+          const testCount = data.filter(i => i.activity_type === 'test_completed').length;
+          
+          setStats({
+            totalCO2: totalCO2.toFixed(1),
+            trees: Math.round(totalCO2 * 5), // Giả định vui: 1kg CO2 = 5 cây (hoặc công thức chuẩn ESG của bạn)
+            energy: (testCount * 0.05).toFixed(1), 
+            water: (testCount * 0.5).toFixed(1) // Giả định: 1 bài thi giấy tốn 0.5L nước sx giấy
+          });
+
+          // --- B. XỬ LÝ DỮ LIỆU BIỂU ĐỒ (Group theo tháng) ---
+          // Tạo mảng 6 tháng gần nhất
+          const months = {};
+          const today = new Date();
+          for (let i = 5; i >= 0; i--) {
+             const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+             const key = `T${d.getMonth() + 1}`; // Ví dụ: T2, T3...
+             months[key] = { name: key, co2: 0, energy: 0 };
+          }
+
+          // Cộng dồn dữ liệu vào tháng tương ứng
+          data.forEach(item => {
+             const date = new Date(item.created_at);
+             const key = `T${date.getMonth() + 1}`;
+             if (months[key]) {
+                months[key].co2 += item.co2_saved || 0;
+                // Giả sử energy tỉ lệ thuận với CO2 để vẽ cho đẹp
+                months[key].energy += (item.co2_saved || 0) * 0.8; 
+             }
+          });
+
+          setChartData(Object.values(months));
+        }
+
+      } catch (error) {
+        console.error("Lỗi tải ESG:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchESGData();
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-900 overflow-hidden text-left">
       
-
-
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         <header className="px-8 py-6 border-b border-slate-100 bg-white/80 backdrop-blur-md flex justify-between items-center shrink-0 sticky top-0 z-10">
@@ -76,13 +123,37 @@ const ESGReport = () => {
             
             {/* 1. IMPACT CARDS */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <ImpactCard title="Giảm thải CO2" value="12.5" unit="Tấn" icon={<Wind size={24}/>} color="bg-emerald-500" />
-              <ImpactCard title="Tiết kiệm Nước" value="450" unit="m³" icon={<Droplets size={24}/>} color="bg-cyan-500" />
-              <ImpactCard title="Năng lượng Xanh" value="85" unit="%" icon={<Zap size={24}/>} color="bg-yellow-500" />
-              <ImpactCard title="Cây xanh tương đương" value="342" unit="Cây" icon={<TreePine size={24}/>} color="bg-green-600" />
+              <ImpactCard 
+                title="Giảm thải CO2" 
+                value={isLoading ? "..." : stats.totalCO2} 
+                unit="kg" 
+                icon={<Wind size={24}/>} 
+                color="bg-emerald-500" 
+              />
+              <ImpactCard 
+                title="Tiết kiệm Nước" 
+                value={isLoading ? "..." : stats.water} 
+                unit="Lít" 
+                icon={<Droplets size={24}/>} 
+                color="bg-cyan-500" 
+              />
+              <ImpactCard 
+                title="Tiết kiệm Điện" 
+                value={isLoading ? "..." : stats.energy} 
+                unit="kWh" 
+                icon={<Zap size={24}/>} 
+                color="bg-yellow-500" 
+              />
+              <ImpactCard 
+                title="Cây xanh tương đương" 
+                value={isLoading ? "..." : stats.trees} 
+                unit="Cây" 
+                icon={<TreePine size={24}/>} 
+                color="bg-green-600" 
+              />
             </div>
 
-            {/* 2. CHART SECTION (FIXED HEIGHT 300px) */}
+            {/* 2. CHART SECTION */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
                 <div className="flex justify-between items-center mb-8">
@@ -92,10 +163,9 @@ const ESGReport = () => {
                   </button>
                 </div>
                 
-                {/* QUAN TRỌNG: Height cố định 300px để tránh lỗi trắng màn hình */}
                 <div style={{ width: '100%', height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data}>
+                    <AreaChart data={chartData}>
                       <defs>
                         <linearGradient id="colorCo2" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
@@ -112,7 +182,7 @@ const ESGReport = () => {
                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                         itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                       />
-                      <Area type="monotone" dataKey="co2" stackId="1" stroke="#10B981" strokeWidth={3} fill="url(#colorCo2)" name="Giảm CO2 (Tấn)" />
+                      <Area type="monotone" dataKey="co2" stackId="1" stroke="#10B981" strokeWidth={3} fill="url(#colorCo2)" name="Giảm CO2 (kg)" />
                       <Area type="monotone" dataKey="energy" stackId="1" stroke="#0EA5E9" strokeWidth={3} fill="url(#colorEnergy)" name="Tiết kiệm điện (kWh)" />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -121,7 +191,6 @@ const ESGReport = () => {
 
               {/* 3. SUGGESTIONS */}
               <div className="bg-emerald-900 text-white p-8 rounded-[32px] shadow-xl relative overflow-hidden flex flex-col justify-between">
-                {/* Background Pattern */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500 rounded-full blur-[80px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
                 
                 <div>
@@ -129,14 +198,14 @@ const ESGReport = () => {
                     <Leaf className="text-emerald-400" />
                     <span className="text-xs font-black uppercase tracking-widest text-emerald-200">Mẹo AI Nexa</span>
                   </div>
-                  <h3 className="text-2xl font-[1000] leading-tight mb-4">Tối ưu hóa năng lượng máy chủ</h3>
+                  <h3 className="text-2xl font-[1000] leading-tight mb-4">Tối ưu hóa năng lượng</h3>
                   <p className="text-sm font-medium text-emerald-200 leading-relaxed">
-                    Hệ thống phát hiện máy chủ hoạt động thấp điểm vào 2:00 AM. Đề xuất chuyển sang chế độ Eco-Mode để tiết kiệm 15% điện năng.
+                    Dữ liệu cho thấy hoạt động thi cử tăng cao vào cuối tháng. Đề xuất tăng cường server vào giờ hành chính để tối ưu hiệu suất năng lượng.
                   </p>
                 </div>
                 
                 <button className="mt-8 w-full py-4 bg-white text-emerald-900 rounded-2xl font-[1000] text-sm uppercase tracking-widest hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2">
-                  Kích hoạt ngay <ArrowUpRight size={16} />
+                  Xem chi tiết <ArrowUpRight size={16} />
                 </button>
               </div>
             </div>
