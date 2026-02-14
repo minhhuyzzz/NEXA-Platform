@@ -1,53 +1,84 @@
 import React, { useState } from 'react';
-/* 1. Import Link và useNavigate */
 import { useNavigate, Link } from 'react-router-dom';
-// Import icon mũi tên quay lại từ thư viện lucide-react (nếu bạn đã cài)
-// Hoặc dùng SVG trực tiếp như bên dưới để không phụ thuộc thư viện
 import { ArrowLeft } from 'lucide-react'; 
+// 👇 Import kết nối Supabase
+import { supabase } from '../../../services/supabaseClient';
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMsg('');
 
-    // Giả lập delay mạng 1 giây
-    setTimeout(() => {
-      setIsLoading(false);
-      
-      // LOGIC CHUYỂN HƯỚNG (GIỮ NGUYÊN TỪ CODE CŨ CỦA BẠN)
-      if (email.includes('admin')) {
-        localStorage.setItem('nexa_role', 'admin');
-        localStorage.setItem('nexa_user', JSON.stringify({ fullName: 'Quản trị viên', role: 'admin' }));
-        navigate('/admin');
-      } else {
-        localStorage.setItem('nexa_role', 'user');
-        localStorage.setItem('nexa_user', JSON.stringify({ fullName: 'Trần Minh Huy', university: 'ĐH Công Thương', role: 'student' }));
-        navigate('/user/dashboard');
-      }
-    }, 1000);
+    try {
+        // 1. Đăng nhập qua Supabase Auth
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (error) throw error;
+
+        if (data?.user) {
+            // 2. Lấy thông tin role từ bảng 'profiles'
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+            
+            if (profileError) {
+                console.error("Lỗi lấy profile:", profileError);
+                // Nếu không lấy được profile, mặc định cho vào user dashboard để an toàn
+                navigate('/user/dashboard');
+                return;
+            }
+
+            // 3. Lưu thông tin vào LocalStorage (để dùng cho các trang khác hiển thị tên)
+            localStorage.setItem('nexa_user', JSON.stringify({ 
+                fullName: profile.full_name || email, 
+                role: profile.role,
+                avatar: profile.avatar_url
+            }));
+            localStorage.setItem('nexa_role', profile.role);
+
+            // 4. Chuyển hướng dựa trên Role
+            if (profile.role === 'admin' || profile.role === 'school' || profile.role === 'business') {
+                navigate('/admin/dashboard');
+            } else {
+                navigate('/user/dashboard');
+            }
+        }
+
+    } catch (error) {
+        setErrorMsg('Email hoặc mật khẩu không chính xác.');
+        console.error("Login Error:", error.message);
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex font-sans text-slate-900 bg-slate-50 relative">
       
-      {/* NÚT QUAY VỀ TRANG CHỦ (ABSOLUTE POSITION) */}
+      {/* NÚT QUAY VỀ TRANG CHỦ */}
       <Link 
-  to="/" 
-  className="absolute top-2 left-2 z-50 flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all group"
->
-  {/* Thêm group-hover để icon dịch chuyển nhẹ khi rê chuột */}
-  <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-  Quay về
-</Link>
+        to="/" 
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all group"
+      >
+        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        Quay về
+      </Link>
 
       {/* CỘT TRÁI: FORM ĐĂNG NHẬP */}
       <div className="flex-1 flex flex-col justify-center items-center p-8 bg-white lg:max-w-xl xl:max-w-2xl relative z-10">
-        <div className="w-full max-w-md space-y-8 mt-12 md:mt-0"> {/* Thêm margin-top để tránh nút Back đè lên trên mobile */}
+        <div className="w-full max-w-md space-y-8 mt-12 md:mt-0">
           
           {/* Logo & Header */}
           <Link to="/" className="flex items-center gap-3 mb-8 cursor-pointer w-fit">
@@ -60,13 +91,20 @@ const Login = () => {
             <p className="text-slate-500 text-lg">Nhập thông tin để truy cập hệ thống.</p>
           </div>
 
+          {/* Thông báo lỗi */}
+          {errorMsg && (
+            <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-bold border border-red-100 flex items-center gap-2">
+                ⚠️ {errorMsg}
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Email</label>
               <input 
                 type="email" 
                 required
-                placeholder="admin@nexa.edu.vn hoặc user@school.edu.vn"
+                placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-bold text-slate-700 placeholder:font-normal"
@@ -101,7 +139,7 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Social Login */}
+          {/* Social Login (Giữ nguyên giao diện, chưa logic) */}
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
             <div className="relative flex justify-center text-sm"><span className="px-4 bg-white text-slate-400 font-bold text-xs uppercase tracking-widest">Hoặc tiếp tục với</span></div>
@@ -122,9 +160,8 @@ const Login = () => {
         </div>
       </div>
 
-      {/* CỘT PHẢI: ẢNH MINH HỌA (Giữ nguyên concept nhưng làm đẹp hơn) */}
+      {/* CỘT PHẢI: ẢNH MINH HỌA (Giữ nguyên) */}
       <div className="hidden lg:flex flex-1 bg-[#0f172a] relative overflow-hidden items-center justify-center p-16">
-        {/* Background Effects */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600 rounded-full blur-[150px] opacity-20 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600 rounded-full blur-[150px] opacity-20"></div>
@@ -141,15 +178,6 @@ const Login = () => {
             <p className="text-slate-400 text-xl leading-relaxed mb-10 font-medium">
                 NEXA giúp sinh viên và nhân sự định hình lộ trình phát triển bản thân thông qua dữ liệu thực tế và trí tuệ nhân tạo.
             </p>
-            
-            {/* Thẻ Testimonial giả lập */}
-            <div className="bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 flex items-center gap-5 hover:bg-white/10 transition-colors cursor-default">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">A</div>
-                <div>
-                    <div className="font-bold text-lg">AI Assessment Engine</div>
-                    <div className="text-sm text-blue-200 font-medium">Powered by DigComp 2.2 Standard</div>
-                </div>
-            </div>
         </div>
       </div>
 
