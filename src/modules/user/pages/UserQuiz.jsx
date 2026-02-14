@@ -1,39 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, ChevronRight, ChevronLeft, AlertCircle, CheckCircle2, X, ListChecks } from 'lucide-react';
-// Import kho câu hỏi
-import { questionBank } from '../data/questions';
+// 👇 1. Import Supabase thay vì file local
+import { supabase } from '../../../services/supabaseClient';
 
 const UserQuiz = () => {
   const navigate = useNavigate();
   
   // State
-  const [examQuestions, setExamQuestions] = useState([]); // Chứa bộ đề đã random
+  const [examQuestions, setExamQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(20 * 60); // 20 phút cho 20 câu
+  const [timeLeft, setTimeLeft] = useState(20 * 60); 
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // --- THUẬT TOÁN RANDOM ĐỀ THI ---
+  // 👇 2. Logic lấy câu hỏi từ SUPABASE
   useEffect(() => {
-    // 1. Trộn ngẫu nhiên mảng câu hỏi (Fisher-Yates Shuffle hoặc sort random)
-    const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
-    
-    // 2. Lấy ra 20 câu đầu tiên
-    const selected = shuffled.slice(0, 20);
-    
-    setExamQuestions(selected);
-    setIsLoading(false);
+    const fetchQuestions = async () => {
+        try {
+            // Lấy 20 câu ngẫu nhiên từ bảng 'questions'
+            // (Lưu ý: Supabase chưa hỗ trợ random() trực tiếp tốt, nên ta lấy nhiều về rồi shuffle ở client)
+            const { data, error } = await supabase
+                .from('questions')
+                .select('*')
+                .limit(50); // Lấy 50 câu để random
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                // Shuffle và lấy 20 câu
+                const shuffled = data.sort(() => 0.5 - Math.random());
+                const selected = shuffled.slice(0, 20);
+                
+                // Chuẩn hóa dữ liệu (Parse JSON options nếu cần)
+                const formattedQuestions = selected.map(q => ({
+                    ...q,
+                    options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
+                    // Map lại tên trường cho khớp với code cũ
+                    question: q.question_text, 
+                    correct: ['A', 'B', 'C', 'D'].indexOf(q.correct_answer), // Chuyển "A" -> 0, "B" -> 1...
+                    topic: "Kiến thức chung" // Tạm thời để cứng hoặc lấy từ DB nếu có cột topic
+                }));
+
+                setExamQuestions(formattedQuestions);
+            }
+        } catch (error) {
+            console.error("Lỗi tải câu hỏi:", error);
+            alert("Không thể tải đề thi. Vui lòng thử lại sau.");
+            navigate('/user/exams');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    fetchQuestions();
   }, []);
 
-  // Đồng hồ đếm ngược
+  // Đồng hồ đếm ngược (Giữ nguyên)
   useEffect(() => {
     if (timeLeft > 0 && !isSubmitted && !isLoading) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
     } else if (timeLeft === 0 && !isSubmitted) {
-      handleSubmit(true); // Tự động nộp khi hết giờ
+      handleSubmit(true);
     }
   }, [timeLeft, isSubmitted, isLoading]);
 
@@ -48,8 +78,8 @@ const UserQuiz = () => {
     setAnswers({ ...answers, [currentQuestion]: optionIndex });
   };
 
-  // --- CẬP NHẬT HÀM NỘP BÀI (QUAN TRỌNG) ---
-  const handleSubmit = (autoSubmit = false) => {
+  // 👇 3. Logic Nộp bài & Lưu điểm
+  const handleSubmit = async (autoSubmit = false) => {
     if (autoSubmit || window.confirm('Bạn có chắc chắn muốn nộp bài không?')) {
       setIsSubmitted(true);
       
@@ -61,36 +91,73 @@ const UserQuiz = () => {
 
       const passed = score >= (examQuestions.length / 2);
 
-      // Chuyển sang trang kết quả sau 1.5s
+      // --- LƯU KẾT QUẢ VÀO DATABASE ---
+      try {
+          const user = JSON.parse(localStorage.getItem('nexa_user'));
+          // Lấy ID user hiện tại (cần logic Auth chuẩn để lấy ID, tạm thời bỏ qua user_id nếu chưa có)
+          const { data: authData } = await supabase.auth.getUser();
+          const userId = authData.user?.id;
+
+          if (userId) {
+              await supabase.from('test_results').insert([
+                  {
+                      user_id: userId,
+                      skill_score: { total: score, max: examQuestions.length },
+                      ai_recommendation: "Đang chờ phân tích...", // Placeholder
+                      created_at: new Date()
+                  }
+              ]);
+              
+              // Log Green ESG (Ví dụ: tiết kiệm 0.2kg CO2 do thi online)
+              await supabase.from('green_logs').insert([
+                  {
+                      user_id: userId,
+                      co2_saved: 0.2,
+                      activity_type: 'test_completed'
+                  }
+              ]);
+          }
+      } catch (err) {
+          console.error("Lỗi lưu kết quả:", err);
+      }
+
+      // Chuyển trang
       setTimeout(() => {
         navigate('/user/quiz-result', { 
             state: { 
                 score: score, 
                 totalQuestions: examQuestions.length,
                 passed: passed,
-                questions: examQuestions, // Gửi danh sách câu hỏi
-                userAnswers: answers      // Gửi đáp án người dùng chọn
+                questions: examQuestions,
+                userAnswers: answers
             } 
         });
       }, 1500);
     }
   };
 
-  // Màn hình loading khi đang sinh đề
   if (isLoading) {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-slate-500 font-bold animate-pulse">Đang sinh đề ngẫu nhiên từ kho dữ liệu...</p>
+            <p className="text-slate-500 font-bold animate-pulse">Đang tải đề thi từ hệ thống...</p>
         </div>
     );
+  }
+
+  // Nếu không có câu hỏi nào
+  if (examQuestions.length === 0) {
+      return (
+          <div className="min-h-screen flex items-center justify-center">
+              <p>Không tìm thấy câu hỏi nào trong hệ thống.</p>
+          </div>
+      )
   }
 
   const currentQ = examQuestions[currentQuestion];
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
-      
       {/* HEADER */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 px-6 py-4 shadow-sm">
         <div className="max-w-5xl mx-auto flex justify-between items-center">
@@ -205,16 +272,6 @@ const UserQuiz = () => {
                             </button>
                          )
                     })}
-                </div>
-            </div>
-            
-            <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
-                <div className="flex items-start gap-3">
-                    <AlertCircle className="text-blue-600 flex-shrink-0" size={20} />
-                    <p className="text-xs text-blue-800 font-medium leading-relaxed">
-                        <span className="font-bold uppercase block mb-1">Cơ chế Random:</span>
-                        Đề thi được sinh ngẫu nhiên từ kho dữ liệu. Mỗi lần thi là một đề khác nhau.
-                    </p>
                 </div>
             </div>
         </div>

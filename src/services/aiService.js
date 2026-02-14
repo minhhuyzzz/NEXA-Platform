@@ -1,47 +1,28 @@
+// src/services/aiService.js
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const API_KEY = import.meta.env.VITE_GEMINI_KEY;
+const genAI = new GoogleGenerativeAI(API_KEY);
+
 export const getGeminiAnalysis = async (score, total, topicStats) => {
-  const apiKey = import.meta.env.VITE_GEMINI_KEY;
-
-  if (!apiKey) {
-      console.error("Lỗi: Chưa có API Key trong file .env");
-      return "Chưa cấu hình API Key. Vui lòng kiểm tra file .env.";
-  }
-
-  // 👇 Dùng model 1.5-flash mới nhất, gọi trực tiếp qua URL này thì KHÔNG BAO GIỜ LỖI THƯ VIỆN
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-  // Chuẩn bị dữ liệu
-  const statsText = Object.entries(topicStats)
-    .map(([topic, data]) => `- ${topic}: Đúng ${data.correct}/${data.total} câu`)
-    .join("\n");
-
-  const prompt = `
-    Bạn là AI Mentor của hệ thống giáo dục NEXA.
-    Học viên vừa đạt ${score}/${total} điểm.
-    Chi tiết năng lực:
-    ${statsText}
-
-    Nhiệm vụ:
-    1. Nhận xét ngắn gọn về điểm mạnh (1 câu).
-    2. Chỉ ra điểm yếu nhất và đưa ra lời khuyên cụ thể để cải thiện (1 câu).
-    Giọng văn: Chuyên nghiệp, khích lệ, dùng emoji.
-  `;
-
   try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    // Tạo prompt cho AI
+    const prompt = `
+      Tôi vừa làm bài kiểm tra năng lực số.
+      Điểm số: ${score}/${total}.
+      Chi tiết từng chủ đề: ${JSON.stringify(topicStats)}.
+      
+      Hãy đóng vai một chuyên gia giáo dục, đưa ra nhận xét ngắn gọn (dưới 100 từ) về điểm mạnh, điểm yếu và gợi ý lộ trình học tập phù hợp.
+      Giọng văn khích lệ, chuyên nghiệp.
+    `;
 
-    if (!response.ok) throw new Error(`Google API Error: ${response.status}`);
-
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "AI đang phân tích...";
-
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
   } catch (error) {
-    console.error("Lỗi gọi AI:", error);
-    return "Hệ thống AI đang bận. Bạn hãy chủ động ôn tập lại các chủ đề có điểm thấp nhé! 💪";
+    console.error("Gemini Error:", error);
+    return "Hệ thống AI đang bận, nhưng bạn đã làm rất tốt! Hãy tiếp tục rèn luyện nhé.";
   }
 };

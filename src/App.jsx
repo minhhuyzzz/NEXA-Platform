@@ -29,7 +29,7 @@ import UserExams from './modules/user/pages/UserExams';
 import UserProfile from './modules/user/pages/UserProfile';
 import UserQuiz from './modules/user/pages/UserQuiz';
 import UserQuizResult from './modules/user/pages/UserQuizResult';
-
+import ImportTool from './ImportTool';
 function App() {
   return (
     <Routes>
@@ -64,7 +64,8 @@ function App() {
           
           {/* Các trang Quiz */}
           <Route path="quiz-take" element={<UserQuiz />} />
-          <Route path="quiz-result" element={<UserQuizResult />} />      
+          <Route path="quiz-result" element={<UserQuizResult />} />    
+          <Route path="/" element={<ImportTool />} />  
       </Route>
     </Routes>
   );
