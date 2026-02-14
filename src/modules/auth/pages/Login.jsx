@@ -70,7 +70,7 @@ const Login = () => {
       {/* NÚT QUAY VỀ TRANG CHỦ */}
       <Link 
         to="/" 
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all group"
+        className="absolute top-0 left-0 z-50 flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all group"
       >
         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
         Quay về
