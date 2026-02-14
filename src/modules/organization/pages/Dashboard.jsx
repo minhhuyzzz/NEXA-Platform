@@ -132,7 +132,7 @@ const OrgDashboard = () => {
       {/* 2. Stats Grid (HIỂN THỊ DỮ LIỆU THẬT) */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <StatCard 
-            title="Tổng Sinh viên" 
+            title="Tổng số người" 
             value={loading ? "..." : stats.totalUsers} 
             trend="+12%" 
             icon={<Users size={20} color="white"/>} 

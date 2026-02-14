@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Search, Filter, MoreHorizontal, UserPlus, 
-  Mail, Building2, GraduationCap, Briefcase 
+  Mail, Users // 👈 ĐÃ THÊM ICON Users VÀO ĐÂY
 } from 'lucide-react';
 import { supabase } from '../../../services/supabaseClient';
 
@@ -9,42 +9,31 @@ const StaffList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [filterRole, setFilterRole] = useState('all'); // all, learner, school, business
+  const [filterRole, setFilterRole] = useState('all');
 
   useEffect(() => {
     const fetchOrgUsers = async () => {
       try {
         setLoading(true);
 
-        // 1. Lấy thông tin người đang đăng nhập (Admin/Giảng viên)
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) return;
 
-        // 2. Lấy Profile chi tiết của người đang đăng nhập để biết họ thuộc Tổ chức nào
         const { data: myProfile, error: myError } = await supabase
           .from('profiles')
-          .select('org_name, role') // Quan trọng: Lấy org_name
+          .select('org_name, role')
           .eq('id', user.id)
           .single();
 
         if (myError) throw myError;
         setCurrentUser(myProfile);
 
-        // 3. Lấy danh sách nhân sự THUỘC CÙNG TỔ CHỨC
-        // Logic: Chỉ lấy những ai có org_name GIỐNG org_name của người đang đăng nhập
         let query = supabase
           .from('profiles')
           .select('*')
-          .eq('org_name', myProfile.org_name) // 👈 ĐÂY LÀ CHÌA KHÓA PHÂN QUYỀN
-          .neq('id', user.id); // Không hiện chính mình trong danh sách
-
-        // Nếu người xem là Giảng viên (school), chỉ cho xem Sinh viên (learner)
-        // Admin (business/school) thì được xem hết
-        if (myProfile.role === 'school' && myProfile.role !== 'business') {
-             // Tùy logic bên bạn, ví dụ Giảng viên chỉ xem được Learner
-             // query = query.eq('role', 'learner'); 
-        }
+          .eq('org_name', myProfile.org_name)
+          .neq('id', user.id);
 
         const { data: orgUsers, error: listError } = await query;
         if (listError) throw listError;
@@ -61,7 +50,6 @@ const StaffList = () => {
     fetchOrgUsers();
   }, []);
 
-  // Lọc theo UI (Dropdown)
   const filteredUsers = users.filter(user => 
     filterRole === 'all' ? true : user.role === filterRole
   );
@@ -118,6 +106,7 @@ const StaffList = () => {
             <div className="p-12 text-center text-slate-400 font-bold">Đang tải danh sách...</div>
         ) : filteredUsers.length === 0 ? (
             <div className="p-12 text-center flex flex-col items-center">
+                {/* 👇 Chỗ này dùng icon Users mà lúc nãy quên import */}
                 <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300"><Users size={32}/></div>
                 <p className="text-slate-500 font-bold">Chưa có nhân sự nào trong tổ chức "{currentUser?.org_name}".</p>
                 <p className="text-xs text-slate-400 mt-2">Hãy mời họ đăng ký và nhập đúng tên tổ chức này.</p>
@@ -151,13 +140,11 @@ const StaffList = () => {
                             <td className="p-6">
                                 <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
                                     <Mail size={16} className="text-slate-400"/>
-                                    {/* Email nằm trong auth.users nên ở profile public có thể không lấy được trực tiếp nếu chưa sync, tạm hiển thị placeholder hoặc cột email nếu bạn đã thêm */}
                                     <span className="truncate max-w-[150px]">user_{u.id.slice(0,4)}@nexa.edu.vn</span>
                                 </div>
                             </td>
                             <td className="p-6">
                                 <span className="text-sm font-bold text-slate-500">
-                                    {/* Giả lập ngày tham gia */}
                                     {new Date().toLocaleDateString('vi-VN')} 
                                 </span>
                             </td>
