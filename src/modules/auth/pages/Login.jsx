@@ -37,12 +37,13 @@ const Login = () => {
       
       {/* NÚT QUAY VỀ TRANG CHỦ (ABSOLUTE POSITION) */}
       <Link 
-        to="/" 
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full text-sm font-bold text-slate-600 hover:text-blue-600 hover:bg-white shadow-sm transition-all border border-slate-200/50"
-      >
-        <ArrowLeft size={16} /> {/* Icon mũi tên */}
-        Quay về trang chủ
-      </Link>
+  to="/" 
+  className="absolute top-2 left-2 z-50 flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all group"
+>
+  {/* Thêm group-hover để icon dịch chuyển nhẹ khi rê chuột */}
+  <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+  Quay về
+</Link>
 
       {/* CỘT TRÁI: FORM ĐĂNG NHẬP */}
       <div className="flex-1 flex flex-col justify-center items-center p-8 bg-white lg:max-w-xl xl:max-w-2xl relative z-10">

@@ -75,53 +75,7 @@ const UserLearningPath = () => {
   return (
     <div className="h-screen w-full flex bg-[#f8fafc] font-sans text-slate-900 overflow-hidden">
       
-      {/* 1. SIDEBAR (MENU TRÁI) */}
-      <aside className="w-72 bg-white border-r border-slate-100 flex flex-col shrink-0 z-20">
-        <div className="p-8 flex items-center gap-3">
-          <img src={LOGO_URL} alt="NEXA" className="h-8 w-auto object-contain" />
-          <span className="text-[#1e3a8a] font-[1000] text-2xl tracking-tighter italic">NEXA</span>
-        </div>
-
-        <nav className="flex-1 px-4 space-y-2 py-4">
-          <SidebarItem 
-            active={currentPath === '/user/dashboard'} 
-            icon={<LayoutDashboard size={20}/>} 
-            label="Tổng quan" 
-            onClick={() => navigate('/user/dashboard')}
-          />
-          <SidebarItem 
-            active={currentPath === '/user/learning'} 
-            icon={<Compass size={20}/>} 
-            label="Lộ trình học tập" 
-            onClick={() => navigate('/user/learning')} 
-          />
-          <SidebarItem 
-            active={currentPath === '/user/exams'}
-            icon={<BookOpen size={20}/>} 
-            label="Bài kiểm tra" 
-            onClick={() => navigate('/user/exams')} 
-          />
-          <SidebarItem 
-            active={currentPath === '/user/nft'}
-            icon={<Award size={20}/>} 
-            label="Chứng chỉ NFT" 
-            onClick={() => navigate('/user/nft')} 
-          />
-          <SidebarItem 
-            active={currentPath === '/user/profile'}
-            icon={<User size={20}/>} 
-            label="Hồ sơ cá nhân" 
-            onClick={() => navigate('/user/profile')} 
-          />
-        </nav>
-
-        <div className="p-6 border-t border-slate-50">
-          <button onClick={handleLogout} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all font-[1000] text-sm group">
-            <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" /> 
-            <span className="tracking-tight uppercase">Đăng xuất</span>
-          </button>
-        </div>
-      </aside>
+      
 
       {/* 2. MAIN CONTENT (NỘI DUNG CHÍNH) */}
       <main className="flex-1 flex flex-col overflow-hidden">

@@ -56,48 +56,7 @@ const ESGReport = () => {
   return (
     <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-900 overflow-hidden text-left">
       
-      {/* SIDEBAR (Style Xanh Ngọc) */}
-      <aside className="w-72 bg-white border-r border-slate-100 flex flex-col h-screen shrink-0 z-20">
-        <div className="p-8 flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-200">E</div>
-          <span className="text-[#0F172A] font-[1000] text-2xl tracking-tighter uppercase">NEXA ESG</span>
-        </div>
-        <nav className="flex-1 px-4 py-4 space-y-2">
-          {/* SỬA LỖI NAVIGATE Ở ĐÂY */}
-          <SidebarItem 
-            icon={<LayoutDashboard size={20}/>} 
-            label="Tổng quan" 
-            onClick={() => navigate('/admin')} 
-          />
-          <SidebarItem 
-            icon={<Users size={20}/>} 
-            label="Quản lý Nhân sự" 
-            onClick={() => navigate('/admin/users')} 
-          />
-          <SidebarItem 
-            active 
-            icon={<FileBarChart size={20}/>} 
-            label="Báo cáo ESG" 
-            // Trang hiện tại không cần onClick
-          />
-          <SidebarItem 
-            icon={<Award size={20}/>} 
-            label="Chứng chỉ & NFT" 
-            onClick={() => navigate('/admin/nft')} 
-          />
-          <div className="pt-8 pb-4"><div className="h-px bg-slate-100 mx-4"></div></div>
-          <SidebarItem 
-            icon={<Settings size={20}/>} 
-            label="Cài đặt hệ thống" 
-            onClick={() => navigate('/admin/settings')} 
-          />
-        </nav>
-        <div className="p-6 border-t border-slate-50">
-          <button onClick={() => navigate('/login')} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all">
-            <LogOut size={20} /> <span className="tracking-tight">Đăng xuất</span>
-          </button>
-        </div>
-      </aside>
+
 
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
