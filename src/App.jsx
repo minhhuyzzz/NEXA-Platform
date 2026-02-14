@@ -29,11 +29,12 @@ import UserExams from './modules/user/pages/UserExams';
 import UserProfile from './modules/user/pages/UserProfile';
 import UserQuiz from './modules/user/pages/UserQuiz';
 import UserQuizResult from './modules/user/pages/UserQuizResult';
-import ImportTool from './ImportTool';
+
 function App() {
   return (
     <Routes>
       {/* 1. PUBLIC ROUTES */}
+      
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} /> 
       <Route path="/register" element={<Register />} />
@@ -64,8 +65,7 @@ function App() {
           
           {/* Các trang Quiz */}
           <Route path="quiz-take" element={<UserQuiz />} />
-          <Route path="quiz-result" element={<UserQuizResult />} />    
-          <Route path="/" element={<ImportTool />} />  
+          <Route path="quiz-result" element={<UserQuizResult />} />     
       </Route>
     </Routes>
   );

@@ -128,7 +128,7 @@ const Register = () => {
                     active={role === 'learner'} 
                     onClick={() => setRole('learner')} 
                     icon={<GraduationCap size={24}/>} 
-                    title="Sinh viên" 
+                    title="Sinh viên/Nhân Sự" 
                     desc="Học tập & Rèn luyện" 
                 />
                 <RoleCard 
